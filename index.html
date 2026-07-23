@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>pilkimiloszka</title>
-<link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
+    <link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
     <style>
         body {
             margin: 0;
@@ -12,6 +12,27 @@
             background: linear-gradient(135deg, #ffb6c1, #87cefa);
             color: white;
             text-align: center;
+            min-height: 100vh;
+        }
+
+        /* Pasek nawigacyjny */
+        nav {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: gold;
         }
 
         header {
@@ -33,7 +54,7 @@
             justify-content: center;
             gap: 30px;
             flex-wrap: wrap;
-            margin: 50px 20px;
+            margin: 40px 20px;
         }
 
         .ball {
@@ -48,17 +69,22 @@
             color: white;
             padding: 15px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            transition: transform 0.3s;
+            transition: transform 0.3s, background 0.3s;
+            cursor: pointer;
+            user-select: none;
         }
 
         .ball:hover {
             transform: scale(1.1) rotate(5deg);
         }
 
-        footer {
-            margin-top: 40px;
-            padding: 20px;
-            background: rgba(0,0,0,0.25);
+        .ball:active {
+            transform: scale(0.95);
+        }
+
+        /* Sekcja z przyciskiem i licznikiem */
+        .interactive-zone {
+            margin: 30px 0;
         }
 
         button {
@@ -68,41 +94,94 @@
             border-radius: 10px;
             background: gold;
             cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: background 0.2s, transform 0.1s;
         }
 
         button:hover {
             background: orange;
         }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #click-count {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #fff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0,0,0,0.25);
+        }
     </style>
 </head>
 <body>
+
+<!-- Nowość: Menu górne -->
+<nav>
+    <a href="#">Strona Główna</a>
+    <a href="#pilki">Piłeczki</a>
+    <a href="#licznik">Licznik</a>
+</nav>
 
 <header>
     <h1>⚽ pilkimiloszka ⚽</h1>
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
 </header>
 
-<section class="balls">
-    <div class="ball">
-        Słodkie Piłeczki Miłoszka
+<!-- Klikalne piłeczki -->
+<section class="balls" id="pilki">
+    <div class="ball" onclick="zmienKolor(this)">
+        Kliknij mnie! 🍓
     </div>
 
-    <div class="ball">
-        Słodkie Piłeczki Miłoszka
+    <div class="ball" onclick="zmienKolor(this)">
+        Słodkie Piłeczki Miłoszka ⚽
     </div>
 
-    <div class="ball">
-        Słodkie Piłeczki Miłoszka
+    <div class="ball" onclick="zmienKolor(this)">
+        Kliknij mnie! 🍬
     </div>
 </section>
 
-<button onclick="alert('Dziękujemy za odwiedzenie strony pilkimiloszka! 🎉')">
-    Kliknij mnie!
-</button>
+<!-- Nowość: Interaktywny przycisk z licznikiem -->
+<div class="interactive-zone" id="licznik">
+    <button onclick="dodajPunkt()">Kliknij mnie!</button>
+    <div id="click-count">Liczba kliknięć: 0</div>
+</div>
 
 <footer>
     © 2026 pilkimiloszka — Wszystkie prawa zastrzeżone.
 </footer>
+
+<!-- Skrypt JavaScript dodający interakcję -->
+<script>
+    let count = 0;
+
+    function dodajPunkt() {
+        count++;
+        document.getElementById("click-count").innerText = "Liczba kliknięć: " + count;
+    }
+
+    // Funkcja zmieniająca losowo kolor piłeczki po kliknięciu
+    function zmienKolor(element) {
+        const kolory = [
+            'radial-gradient(circle at top, #ffffff, #ff1493)',
+            'radial-gradient(circle at top, #ffffff, #00bfff)',
+            'radial-gradient(circle at top, #ffffff, #32cd32)',
+            'radial-gradient(circle at top, #ffffff, #ff8c00)'
+        ];
+        const losowyKolor = kolory[Math.floor(Math.random() * kolory.length)];
+        element.style.background = losowyKolor;
+    }
+</script>
 
 </body>
 </html>
