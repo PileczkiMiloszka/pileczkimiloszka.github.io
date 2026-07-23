@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>pilkimiloszka</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #ffb6c1, #87cefa);
+            color: white;
+            text-align: center;
+        }
+
+        header {
+            background: rgba(0,0,0,0.25);
+            padding: 30px;
+        }
+
+        h1 {
+            font-size: 3em;
+            margin: 0;
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+
+        .balls {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 50px 20px;
+        }
+
+        .ball {
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle at top, #ffffff, #ff69b4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: white;
+            padding: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .ball:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0,0,0,0.25);
+        }
+
+        button {
+            padding: 12px 25px;
+            font-size: 18px;
+            border: none;
+            border-radius: 10px;
+            background: gold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: orange;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>⚽ pilkimiloszka ⚽</h1>
+    <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
+</header>
+
+<section class="balls">
+    <div class="ball">
+        Słodkie Piłeczki Miłoszka
+    </div>
+
+    <div class="ball">
+        Słodkie Piłeczki Miłoszka
+    </div>
+
+    <div class="ball">
+        Słodkie Piłeczki Miłoszka
+    </div>
+</section>
+
+<button onclick="alert('Dziękujemy za odwiedzenie strony pilkimiloszka! 🎉')">
+    Kliknij mnie!
+</button>
+
+<footer>
+    © 2026 pilkimiloszka — Wszystkie prawa zastrzeżone.
+</footer>
+
+</body>
+</html>
