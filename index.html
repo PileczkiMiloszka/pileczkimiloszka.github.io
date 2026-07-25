@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Słodkie Piłeczki Miłoszka - Clicker</title>
+    <title>Słodkie Piłeczki Miłoszka - Super Clicker Deluxe</title>
     <link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
     <style>
         body {
@@ -44,6 +44,7 @@
         h1 {
             font-size: 2.8em;
             margin: 0;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
 
         /* Piłeczki dekoracyjne */
@@ -56,8 +57,8 @@
         }
 
         .ball {
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
             background: radial-gradient(circle at top, #ffffff, #ff69b4);
             border-radius: 50%;
             display: flex;
@@ -82,17 +83,17 @@
 
         /* Główny panel gry */
         .game-zone {
-            background: rgba(0, 0, 0, 0.3);
-            max-width: 450px;
+            background: rgba(0, 0, 0, 0.35);
+            max-width: 480px;
             margin: 0 auto 30px auto;
-            padding: 20px;
+            padding: 25px;
             border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
             position: relative;
         }
 
         #click-count {
-            font-size: 2em;
+            font-size: 2.2em;
             font-weight: bold;
             margin: 10px 0;
             color: #fff;
@@ -100,19 +101,21 @@
         }
 
         .main-btn {
-            padding: 15px 35px;
-            font-size: 22px;
+            padding: 18px 40px;
+            font-size: 24px;
             border: none;
-            border-radius: 15px;
-            background: gold;
+            border-radius: 20px;
+            background: linear-gradient(180deg, #ffd700, #ff8c00);
+            color: #222;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            transition: transform 0.1s, filter 0.2s;
+            user-select: none;
         }
 
         .main-btn:hover {
-            background: orange;
+            filter: brightness(1.1);
         }
 
         .main-btn:active {
@@ -124,43 +127,120 @@
             margin-top: 25px;
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 12px;
         }
 
         .shop-btn {
-            padding: 10px 15px;
+            padding: 12px 15px;
             font-size: 14px;
             border: none;
-            border-radius: 10px;
+            border-radius: 12px;
             background: #00e676;
             color: #111;
             font-weight: bold;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
         }
 
         .shop-btn:hover {
             background: #00c853;
         }
 
+        .shop-btn:active {
+            transform: scale(0.97);
+        }
+
+        /* Sekcja Osiągnięć */
+        .achievements {
+            background: rgba(0, 0, 0, 0.25);
+            max-width: 480px;
+            margin: 20px auto;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .badge-list {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.15);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            opacity: 0.4;
+            transition: opacity 0.3s, background 0.3s;
+        }
+
+        .badge.unlocked {
+            opacity: 1;
+            background: gold;
+            color: #222;
+            font-weight: bold;
+            box-shadow: 0 0 10px gold;
+        }
+
+        /* Latający prezent-niespodzianka */
+        .bonus-present {
+            position: fixed;
+            font-size: 35px;
+            cursor: pointer;
+            user-select: none;
+            z-index: 999;
+            animation: bounce 0.6s infinite alternate;
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-15px); }
+        }
+
         /* Animacja latających cyferek */
         .floating-text {
             position: absolute;
             font-weight: bold;
-            font-size: 20px;
+            font-size: 22px;
             color: gold;
             pointer-events: none;
             animation: floatUp 0.8s ease-out forwards;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+
+        .floating-text.crit {
+            color: #ff3366;
+            font-size: 30px;
+            text-shadow: 0 0 10px #ff3366;
         }
 
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-50px); }
+            100% { opacity: 0; transform: translateY(-60px); }
+        }
+
+        .reset-btn {
+            background: rgba(255, 68, 68, 0.7);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-size: 0.8em;
+        }
+
+        .reset-btn:hover {
+            background: rgba(255, 0, 0, 0.9);
         }
 
         footer {
             padding: 20px;
             background: rgba(0,0,0,0.25);
+            margin-top: 30px;
         }
     </style>
 </head>
@@ -170,6 +250,7 @@
     <a href="#">Strona Główna</a>
     <a href="#pilki">Piłeczki</a>
     <a href="#gra">Gra Klikacz</a>
+    <a href="#osiagniecia">Osiągnięcia</a>
 </nav>
 
 <header>
@@ -177,18 +258,16 @@
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
 </header>
 
-<!-- Klikalne piłeczki dekoracyjne -->
 <section class="balls" id="pilki">
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍓</div>
     <div class="ball" onclick="zmienKolor(this)">Słodkie Piłeczki Miłoszka ⚽</div>
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
 </section>
 
-<!-- Panel Gry -->
 <div class="game-zone" id="gra">
-    <h2>🎮 Klikacz Piłeczek</h2>
+    <h2>🎮 Klikacz Piłeczek Deluxe</h2>
     <div id="click-count">Punkty: 0</div>
-    <p id="stats-info">Moc kliknięcia: 1 | Autoklik/s: 0</p>
+    <p id="stats-info">Moc: 1 | Autoklik/s: 0 | Krytyk: 15% (x5)</p>
     
     <button class="main-btn" onclick="dodajPunkt(event)">KLIKAJ! 🎉</button>
 
@@ -198,9 +277,24 @@
             Mocniejszy Klik (+1/klik) - Koszt: 10 pkt
         </button>
         <button class="shop-btn" id="btn-autoclicker" onclick="kupAutoKlikacz()">
-            Autoklikacz (+1 pkt/sek) - Koszt: 50 pkt
+            Autoklikacz (+1 pkt/s) - Koszt: 50 pkt
+        </button>
+        <button class="shop-btn" id="btn-crit" onclick="kupKrytyka()">
+            Lepszy Krytyk (+1 Mnożnik) - Koszt: 100 pkt
         </button>
     </div>
+
+    <div class="achievements" id="osiagniecia">
+        <h3>🏆 Osiągnięcia</h3>
+        <div class="badge-list">
+            <span class="badge" id="badge-1">🌱 Pierwsze 10 pkt</span>
+            <span class="badge" id="badge-2">🔥 100 Punkcików</span>
+            <span class="badge" id="badge-3">⚡ 1,000 Punktów!</span>
+            <span class="badge" id="badge-4">👑 Król Piłeczek (10k)</span>
+        </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetujGre()">🔄 Zresetuj postęp gry</button>
 </div>
 
 <footer>
@@ -208,55 +302,145 @@
 </footer>
 
 <script>
-    // Inicjalizacja zmiennych (próba wczytania z pamięci przeglądarki)
+    // System Dźwięku (Syntetyczny audio-generator)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
+    // Inicjalizacja zmiennych z pamieci
     let punkty = parseInt(localStorage.getItem('miloszka_punkty')) || 0;
     let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
     let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
     let autoKlikatory = parseInt(localStorage.getItem('miloszka_autoklik')) || 0;
     let kosztAutoKlikacza = parseInt(localStorage.getItem('miloszka_koszt_auto')) || 50;
+    let mnoznikCrit = parseInt(localStorage.getItem('miloszka_crit_mult')) || 5;
+    let kosztCrit = parseInt(localStorage.getItem('miloszka_koszt_crit')) || 100;
 
     aktualizujWidok();
 
-    // Dodawanie punktu ręcznie
+    // Dodawanie punktu
     function dodajPunkt(event) {
-        punkty += mocKlikniecia;
-        tworzLatajacyTekst(event, `+${mocKlikniecia}`);
+        let jestCrit = Math.random() < 0.15; // 15% szansy na krytyka
+        let zdobyte = jestCrit ? (mocKlikniecia * mnoznikCrit) : mocKlikniecia;
+        
+        punkty += zdobyte;
+
+        if (jestCrit) {
+            zagrajdzwiek(880, 'square', 0.15);
+            tworzLatajacyTekst(event, `CRIT! +${zdobyte}`, true);
+        } else {
+            zagrajdzwiek(400 + Math.random() * 100, 'sine', 0.05);
+            tworzLatajacyTekst(event, `+${zdobyte}`, false);
+        }
+
+        sprawdzOsiagniecia();
         aktualizujWidok();
     }
 
-    // Kupowanie mocy
+    // Sklep
     function kupUlepszenie() {
         if (punkty >= kosztUlepszenia) {
             punkty -= kosztUlepszenia;
             mocKlikniecia += 1;
             kosztUlepszenia = Math.floor(kosztUlepszenia * 1.5);
+            zagrajdzwiek(600, 'triangle', 0.1);
             aktualizujWidok();
         } else {
             alert("Brakuje Ci punktów!");
         }
     }
 
-    // Kupowanie autoklikacza
     function kupAutoKlikacz() {
         if (punkty >= kosztAutoKlikacza) {
             punkty -= kosztAutoKlikacza;
             autoKlikatory += 1;
             kosztAutoKlikacza = Math.floor(kosztAutoKlikacza * 1.6);
+            zagrajdzwiek(700, 'triangle', 0.1);
             aktualizujWidok();
         } else {
             alert("Brakuje Ci punktów!");
         }
     }
 
-    // Pętla dodająca punkty automatycznie co sekundę
+    function kupKrytyka() {
+        if (punkty >= kosztCrit) {
+            punkty -= kosztCrit;
+            mnoznikCrit += 1;
+            kosztCrit = Math.floor(kosztCrit * 2);
+            zagrajdzwiek(900, 'sine', 0.15);
+            aktualizujWidok();
+        } else {
+            alert("Brakuje Ci punktów!");
+        }
+    }
+
+    // Pętla Autoklikacza
     setInterval(() => {
         if (autoKlikatory > 0) {
             punkty += autoKlikatory;
+            sprawdzOsiagniecia();
             aktualizujWidok();
         }
     }, 1000);
 
-    // Zmiana kolorów piłeczek na górze
+    // Losowy Prezent-Niespodzianka (pojawia się co 15 sekund)
+    setInterval(() => {
+        if (Math.random() < 0.6) { // 60% szans na pojawienie się
+            stworzPrezent();
+        }
+    }, 15000);
+
+    function stworzPrezent() {
+        const bonus = document.createElement('div');
+        bonus.className = 'bonus-present';
+        bonus.innerText = '🎁';
+        bonus.style.left = Math.random() * (window.innerWidth - 60) + 'px';
+        bonus.style.top = Math.random() * (window.innerHeight - 60) + 'px';
+
+        bonus.onclick = () => {
+            let nagroda = Math.max(15, mocKlikniecia * 10);
+            punkty += nagroda;
+            zagrajdzwiek(1200, 'sine', 0.25);
+            alert(`🎉 Znalazłeś prezent! Otrzymujesz darmowe +${nagroda} punktów!`);
+            bonus.remove();
+            aktualizujWidok();
+        };
+
+        document.body.appendChild(bonus);
+
+        // Znika sam po 6 sekundach jeśli nie zostanie kliknięty
+        setTimeout(() => {
+            if (document.body.contains(bonus)) bonus.remove();
+        }, 6000);
+    }
+
+    // Osiągnięcia
+    function sprawdzOsiagniecia() {
+        if (punkty >= 10) odblokujBadge('badge-1');
+        if (punkty >= 100) odblokujBadge('badge-2');
+        if (punkty >= 1000) odblokujBadge('badge-3');
+        if (punkty >= 10000) odblokujBadge('badge-4');
+    }
+
+    function odblokujBadge(id) {
+        const badge = document.getElementById(id);
+        if (badge && !badge.classList.contains('unlocked')) {
+            badge.classList.add('unlocked');
+        }
+    }
+
+    // Efekty Wizualne
     function zmienKolor(element) {
         const kolory = [
             'radial-gradient(circle at top, #ffffff, #ff1493)',
@@ -266,12 +450,12 @@
             'radial-gradient(circle at top, #ffffff, #9932cc)'
         ];
         element.style.background = kolory[Math.floor(Math.random() * kolory.length)];
+        zagrajdzwiek(500, 'sine', 0.05);
     }
 
-    // Efekt wizualny przy klikaniu
-    function tworzLatajacyTekst(event, tekst) {
+    function tworzLatajacyTekst(event, tekst, isCrit) {
         const el = document.createElement('div');
-        el.className = 'floating-text';
+        el.className = 'floating-text' + (isCrit ? ' crit' : '');
         el.innerText = tekst;
         el.style.left = (event.clientX - 10) + 'px';
         el.style.top = (event.clientY - 20) + 'px';
@@ -279,19 +463,31 @@
         setTimeout(() => el.remove(), 800);
     }
 
-    // Odświeżanie interfejsu i zapisywanie gry
+    function resetujGre() {
+        if (confirm("Czy na pewno chcesz zresetować cały swój postęp?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    }
+
+    // Odświeżanie Widoku i Zapis
     function aktualizujWidok() {
         document.getElementById("click-count").innerText = "Punkty: " + punkty;
-        document.getElementById("stats-info").innerText = `Moc kliknięcia: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory}`;
+        document.getElementById("stats-info").innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
         document.getElementById("btn-upgrade").innerText = `Mocniejszy Klik (+1/klik) - Koszt: ${kosztUlepszenia} pkt`;
         document.getElementById("btn-autoclicker").innerText = `Autoklikacz (+1 pkt/s) - Koszt: ${kosztAutoKlikacza} pkt`;
+        document.getElementById("btn-crit").innerText = `Lepszy Krytyk (+1 Mnożnik) - Koszt: ${kosztCrit} pkt`;
 
-        // Zapis do LocalStorage
+        // Zapis stanu gry
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
         localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
         localStorage.setItem('miloszka_autoklik', autoKlikatory);
         localStorage.setItem('miloszka_koszt_auto', kosztAutoKlikacza);
+        localStorage.setItem('miloszka_crit_mult', mnoznikCrit);
+        localStorage.setItem('miloszka_koszt_crit', kosztCrit);
+
+        sprawdzOsiagniecia();
     }
 </script>
 
