@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Słodkie Piłeczki Miłoszka - Klikacz Piłeczek</title>
+    <title>Słodkie Piłeczki Miłoszka - Klikacz i Fizyka Piłek</title>
     <link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
     <style>
         * {
@@ -21,6 +21,19 @@
             transition: background 0.5s;
         }
 
+        /* Shake effect */
+        .shake {
+            animation: shakeAnim 0.2s ease-in-out;
+        }
+
+        @keyframes shakeAnim {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 5px); }
+            50% { transform: translate(5px, -5px); }
+            75% { transform: translate(-5px, -5px); }
+            100% { transform: translate(0, 0); }
+        }
+
         /* Pasek Złotego Szału */
         body.golden-frenzy {
             background: linear-gradient(135deg, #ffe066, #ff8c00) !important;
@@ -29,7 +42,7 @@
 
         @keyframes frenzyPulse {
             from { filter: brightness(1); }
-            to { filter: brightness(1.18); }
+            to { filter: brightness(1.2); }
         }
 
         nav {
@@ -39,17 +52,21 @@
             justify-content: center;
             gap: 25px;
             backdrop-filter: blur(5px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         nav a {
             color: white;
             text-decoration: none;
             font-weight: bold;
-            transition: color 0.2s;
+            transition: color 0.2s, transform 0.2s;
         }
 
         nav a:hover {
             color: gold;
+            transform: scale(1.1);
         }
 
         header {
@@ -92,11 +109,76 @@
             transform: scale(1.1) rotate(5deg);
         }
 
+        /* Sekcja Fizyki / Sandbox */
+        .sandbox-zone {
+            background: rgba(0, 0, 0, 0.45);
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        #physics-canvas {
+            background: #111827;
+            border-radius: 16px;
+            border: 3px solid rgba(255,255,255,0.2);
+            cursor: crosshair;
+            width: 100%;
+            max-width: 650px;
+            height: 350px;
+            display: block;
+            margin: 15px auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .control-group input[type=range] {
+            cursor: pointer;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+
         /* Główny panel gry */
         .game-zone {
             background: rgba(0, 0, 0, 0.4);
             max-width: 520px;
-            margin: 25px auto 30px auto;
+            margin: 0 auto 30px auto;
             padding: 25px;
             border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
@@ -216,19 +298,41 @@
             filter: grayscale(0.8);
         }
 
-        .skin-btn .lock-icon {
-            position: absolute;
-            font-size: 12px;
-            bottom: 2px;
-            right: 4px;
-        }
-
-        /* Koło Fortuny */
+        /* Wizualne Koło Fortuny */
         .wheel-box {
             background: rgba(255,255,255,0.12);
             padding: 15px;
             border-radius: 16px;
             margin: 15px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .wheel-canvas-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 10px 0;
+        }
+
+        .wheel-pointer {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 18px solid #ff2a6d;
+            z-index: 10;
+        }
+
+        #wheel-canvas {
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99);
         }
 
         .wheel-btn {
@@ -394,8 +498,8 @@
 
 <nav>
     <a href="#">Strona Główna</a>
+    <a href="#fizyka">Plac Fizyki</a>
     <a href="#gra">Gra Klikacz</a>
-    <a href="#pilki">Piłeczki</a>
     <a href="#osiagniecia">Osiągnięcia</a>
 </nav>
 
@@ -403,6 +507,34 @@
     <h1>⚽ pilkimiloszka ⚽</h1>
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
 </header>
+
+<section class="balls" id="pilki">
+    <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍓</div>
+    <div class="ball" onclick="zmienKolor(this)">Słodkie Piłeczki Miłoszka ⚽</div>
+    <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
+</section>
+
+<div class="sandbox-zone" id="fizyka">
+    <h2>🧪 Plac Zabaw Fizyki Piłeczek</h2>
+    <p style="font-size: 0.9em; margin-bottom: 5px;">Klikaj na pole poniżej, aby stwarzać odbijające się piłeczki!</p>
+    <canvas id="physics-canvas" width="650" height="350"></canvas>
+    
+    <div class="controls-row">
+        <div class="control-group">
+            <label for="grav-slider">Grawitacja: <span id="grav-val">0.3</span></label>
+            <input type="range" id="grav-slider" min="0" max="1" step="0.05" value="0.3">
+        </div>
+        <div class="control-group">
+            <label for="bounce-slider">Odbicie: <span id="bounce-val">0.8</span></label>
+            <input type="range" id="bounce-slider" min="0.2" max="1" step="0.05" value="0.8">
+        </div>
+        <button class="action-btn" onclick="stworzDeszczPilek()">🌧️ Deszcz Piłek (x20)</button>
+        <button class="action-btn danger" onclick="wyczyscKolo()">🧹 Wyczyść Screen</button>
+    </div>
+    <div style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">
+        Liczba piłeczek na ekranie: <b id="ball-count">0</b>
+    </div>
+</div>
 
 <div class="game-zone" id="gra">
     <h2>🎮 Klikacz Piłeczek</h2>
@@ -432,6 +564,10 @@
 
     <div class="wheel-box">
         <div style="font-weight: bold; margin-bottom: 8px;">🎡 Słodkie Koło Fortuny</div>
+        <div class="wheel-canvas-container">
+            <div class="wheel-pointer"></div>
+            <canvas id="wheel-canvas" width="180" height="180"></canvas>
+        </div>
         <button class="wheel-btn" id="wheel-btn" onclick="zakrecKolem()" disabled>
             Zakręć (Wymagane: 1000 pkt)
         </button>
@@ -464,18 +600,168 @@
     <button class="reset-btn" onclick="resetujGre()">🔄 Zresetuj postęp gry</button>
 </div>
 
-<section class="balls" id="pilki">
-    <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍓</div>
-    <div class="ball" onclick="zmienKolor(this)">Słodkie Piłeczki Miłoszka ⚽</div>
-    <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
-</section>
-
 <footer>
     © 2026 pilkimiloszka — Wszystkie prawa zastrzeżone.
 </footer>
 
 <script>
-    // System Dźwięku Web Audio API
+    // ==========================================
+    // 🧪 SKRYPT SYMULATORA FIZYKI PIŁECZEK (CANVAS)
+    // ==========================================
+    const canvas = document.getElementById('physics-canvas');
+    const ctx = canvas.getContext('2d');
+    let physicsBalls = [];
+
+    let gravity = 0.3;
+    let bounce = 0.8;
+
+    const gravSlider = document.getElementById('grav-slider');
+    const bounceSlider = document.getElementById('bounce-slider');
+
+    gravSlider.addEventListener('input', (e) => {
+        gravity = parseFloat(e.target.value);
+        document.getElementById('grav-val').innerText = gravity;
+    });
+
+    bounceSlider.addEventListener('input', (e) => {
+        bounce = parseFloat(e.target.value);
+        document.getElementById('bounce-val').innerText = bounce;
+    });
+
+    class PhysicsBall {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.radius = Math.random() * 14 + 10;
+            this.mass = this.radius;
+            this.vx = (Math.random() - 0.5) * 12;
+            this.vy = (Math.random() - 0.5) * 10;
+            this.color = `hsl(${Math.random() * 360}, 85%, 60%)`;
+        }
+
+        update() {
+            this.vy += gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Odbicia od ścianek
+            if (this.x + this.radius > canvas.width) {
+                this.x = canvas.width - this.radius;
+                this.vx *= -bounce;
+            } else if (this.x - this.radius < 0) {
+                this.x = this.radius;
+                this.vx *= -bounce;
+            }
+
+            if (this.y + this.radius > canvas.height) {
+                this.y = canvas.height - this.radius;
+                this.vy *= -bounce;
+                this.vx *= 0.98; // Tarcie
+            } else if (this.y - this.radius < 0) {
+                this.y = this.radius;
+                this.vy *= -bounce;
+            }
+        }
+
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#ffffff';
+            ctx.stroke();
+            ctx.closePath();
+        }
+    }
+
+    // Zaawansowana kolizja między piłeczkami
+    function checkBallCollisions() {
+        for (let i = 0; i < physicsBalls.length; i++) {
+            for (let j = i + 1; j < physicsBalls.length; j++) {
+                let b1 = physicsBalls[i];
+                let b2 = physicsBalls[j];
+
+                let dx = b2.x - b1.x;
+                let dy = b2.y - b1.y;
+                let distance = Math.hypot(dx, dy);
+
+                if (distance < b1.radius + b2.radius) {
+                    let overlap = (b1.radius + b2.radius) - distance;
+                    let nx = dx / (distance || 1);
+                    let ny = dy / (distance || 1);
+
+                    b1.x -= nx * overlap / 2;
+                    b1.y -= ny * overlap / 2;
+                    b2.x += nx * overlap / 2;
+                    b2.y += ny * overlap / 2;
+
+                    let kx = b1.vx - b2.vx;
+                    let ky = b1.vy - b2.vy;
+                    let p = 2 * (nx * kx + ny * ky) / (b1.mass + b2.mass);
+
+                    b1.vx -= p * b2.mass * nx;
+                    b1.vy -= p * b2.mass * ny;
+                    b2.vx += p * b1.mass * nx;
+                    b2.vy += p * b1.mass * ny;
+                }
+            }
+        }
+    }
+
+    canvas.addEventListener('click', (e) => {
+        const rect = canvas.getBoundingClientRect();
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+        const x = (e.clientX - rect.left) * scaleX;
+        const y = (e.clientY - rect.top) * scaleY;
+
+        physicsBalls.push(new PhysicsBall(x, y));
+        zagrajdzwiek(500 + Math.random() * 300, 'sine', 0.04);
+        aktualizujLicznikPilek();
+    });
+
+    function stworzDeszczPilek() {
+        for (let i = 0; i < 20; i++) {
+            physicsBalls.push(new PhysicsBall(
+                Math.random() * (canvas.width - 40) + 20,
+                Math.random() * 50 + 10
+            ));
+        }
+        zagrajdzwiek(700, 'triangle', 0.15);
+        aktualizujLicznikPilek();
+    }
+
+    function wyczyscKolo() {
+        physicsBalls = [];
+        aktualizujLicznikPilek();
+    }
+
+    function aktualizujLicznikPilek() {
+        document.getElementById('ball-count').innerText = physicsBalls.length;
+    }
+
+    function loopFizyki() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        physicsBalls.forEach(ball => {
+            ball.update();
+        });
+
+        checkBallCollisions();
+
+        physicsBalls.forEach(ball => {
+            ball.draw();
+        });
+
+        requestAnimationFrame(loopFizyki);
+    }
+    loopFizyki();
+
+
+    // ==========================================
+    // 🎮 SKRYPT KLIKACZA I GRY
+    // ==========================================
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -491,7 +777,6 @@
         osc.stop(audioCtx.currentTime + duration);
     }
 
-    // Inicjalizacja Zmiennych z localStorage
     let punkty = parseInt(localStorage.getItem('miloszka_punkty')) || 0;
     let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
     let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
@@ -504,12 +789,10 @@
     let frenzyProgress = 0;
     let isFrenzyActive = false;
 
-    // System Combo za szybkie klikanie
     let comboCount = 0;
     let comboMultiplier = 1;
     let comboTimer = null;
 
-    // Definicje skórek i wymagań
     const skorkiDef = {
         '⚽': 0,
         '🍓': 100,
@@ -519,11 +802,8 @@
     };
 
     aktualizujSkorkeGlownejKuli();
-    aktualizujWidok();
 
-    // Dodawanie punktu po kliknięciu
     function dodajPunkt(event) {
-        // Obsługa Combo
         comboCount++;
         if (comboCount > 25) comboMultiplier = 5;
         else if (comboCount > 15) comboMultiplier = 3;
@@ -549,7 +829,6 @@
         
         punkty += zdobyte;
 
-        // Pasek Złotego Szału
         if (!isFrenzyActive) {
             frenzyProgress += 3.5;
             if (frenzyProgress >= 100) {
@@ -562,6 +841,8 @@
         if (jestCrit) {
             zagrajdzwiek(880, 'square', 0.15);
             tworzLatajacyTekst(event, `CRIT! +${zdobyte}`, true);
+            document.body.classList.add('shake');
+            setTimeout(() => document.body.classList.remove('shake'), 200);
         } else {
             zagrajdzwiek(400 + Math.random() * 120, 'sine', 0.05);
             tworzLatajacyTekst(event, `+${zdobyte}`, false);
@@ -571,7 +852,6 @@
         aktualizujWidok();
     }
 
-    // Aktywacja Złotego Szału
     function aktywujZlotySzal() {
         isFrenzyActive = true;
         frenzyProgress = 100;
@@ -592,7 +872,6 @@
         }, 200);
     }
 
-    // Wybór i zmiana skórki
     function zmienSkorke(icon, wymaganePkt) {
         if (punkty < wymaganePkt && !jestSkorkaOdblokowana(icon)) {
             alert(`Ta skórka wymaga co najmniej ${wymaganePkt} punktów!`);
@@ -616,27 +895,72 @@
         document.getElementById('clicker-emoji').innerText = aktywneIcon;
     }
 
-    // Koło Fortuny
-    function zakrecKolem() {
-        if (punkty >= 1000) {
-            punkty -= 1000;
-            const nagrody = [500, 1500, 3000, "MOC+2", 5000];
-            const wygrana = nagrody[Math.floor(Math.random() * nagrody.length)];
+    // --- WIZUALNE KOŁO FORTUNY ---
+    const wCanvas = document.getElementById('wheel-canvas');
+    const wCtx = wCanvas.getContext('2d');
+    const wheelRewards = [500, 1500, "MOC+2", 3000, 100, 5000];
+    const wheelColors = ['#ff4081', '#7c4dff', '#00e676', '#ffeb3b', '#ff9100', '#00b0ff'];
+    let currentWheelRotation = 0;
+    let isSpinning = false;
+
+    function drawWheel() {
+        const numOptions = wheelRewards.length;
+        const arcSize = (2 * Math.PI) / numOptions;
+        
+        wCtx.clearRect(0, 0, wCanvas.width, wCanvas.height);
+        
+        for (let i = 0; i < numOptions; i++) {
+            wCtx.beginPath();
+            wCtx.fillStyle = wheelColors[i % wheelColors.length];
+            wCtx.moveTo(90, 90);
+            wCtx.arc(90, 90, 90, i * arcSize, (i + 1) * arcSize);
+            wCtx.fill();
+            wCtx.stroke();
             
-            zagrajdzwiek(850, 'triangle', 0.3);
+            wCtx.save();
+            wCtx.translate(90, 90);
+            wCtx.rotate(i * arcSize + arcSize / 2);
+            wCtx.fillStyle = "white";
+            wCtx.font = "bold 13px sans-serif";
+            wCtx.textAlign = "right";
+            wCtx.fillText(wheelRewards[i], 80, 5);
+            wCtx.restore();
+        }
+    }
+    drawWheel();
+
+    function zakrecKolem() {
+        if (isSpinning || punkty < 1000) return;
+
+        punkty -= 1000;
+        isSpinning = true;
+        aktualizujWidok();
+
+        const rewardIndex = Math.floor(Math.random() * wheelRewards.length);
+        const segmentDegrees = 360 / wheelRewards.length;
+        const targetDegree = 360 - (rewardIndex * segmentDegrees + segmentDegrees / 2);
+        const totalRotation = currentWheelRotation + 1800 + targetDegree - (currentWheelRotation % 360);
+        
+        currentWheelRotation = totalRotation;
+        wCanvas.style.transform = `rotate(${currentWheelRotation}deg)`;
+
+        zagrajdzwiek(800, 'triangle', 0.5);
+
+        setTimeout(() => {
+            isSpinning = false;
+            const wygrana = wheelRewards[rewardIndex];
 
             if (typeof wygrana === 'number') {
                 punkty += wygrana;
-                alert(`🎉 Wygrałeś na Kole Fortuny: +${wygrana} punktów!`);
+                alert(`🎉 Wygrałeś: +${wygrana} punktów!`);
             } else {
                 mocKlikniecia += 2;
-                alert(`🎉 Wygrałeś darmowy poziom mocy: Moc +2!`);
+                alert(`🎉 Wygrałeś: Moc +2!`);
             }
             aktualizujWidok();
-        }
+        }, 4000);
     }
 
-    // Sklep
     function kupUlepszenie() {
         if (punkty >= kosztUlepszenia) {
             punkty -= kosztUlepszenia;
@@ -673,7 +997,6 @@
         }
     }
 
-    // Autoklikacz
     setInterval(() => {
         if (autoKlikatory > 0) {
             punkty += autoKlikatory;
@@ -682,7 +1005,6 @@
         }
     }, 1000);
 
-    // Losowe Prezenty
     setInterval(() => {
         if (Math.random() < 0.5) stworzPrezent();
     }, 15000);
@@ -707,7 +1029,6 @@
         setTimeout(() => { if (document.body.contains(bonus)) bonus.remove(); }, 6000);
     }
 
-    // Efekty cząsteczek z emoji aktualnej skórki
     function tworzCzasteczkiEmoji(event, emoji) {
         for (let i = 0; i < 5; i++) {
             const p = document.createElement('div');
@@ -726,7 +1047,6 @@
         }
     }
 
-    // Osiągnięcia
     function sprawdzOsiagniecia() {
         if (punkty >= 10) odblokujBadge('badge-1');
         if (punkty >= 100) odblokujBadge('badge-2');
@@ -775,6 +1095,15 @@
     }
 
     function aktualizujWidok() {
+        // Zapisywanie do LocalStorage
+        localStorage.setItem('miloszka_punkty', punkty);
+        localStorage.setItem('miloszka_moc', mocKlikniecia);
+        localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
+        localStorage.setItem('miloszka_autoklik', autoKlikatory);
+        localStorage.setItem('miloszka_koszt_auto', kosztAutoKlikacza);
+        localStorage.setItem('miloszka_crit_mult', mnoznikCrit);
+        localStorage.setItem('miloszka_koszt_crit', kosztCrit);
+
         document.getElementById("click-count").innerText = "Punkty: " + punkty;
         document.getElementById("stats-info").innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
         
@@ -786,7 +1115,6 @@
             document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
         }
 
-        // Aktualizacja stanu skórek
         Object.keys(skorkiDef).forEach(icon => {
             const btn = document.getElementById(`skin-${icon}`);
             if (btn) {
@@ -801,28 +1129,17 @@
             }
         });
 
-        // Koło Fortuny
         const wheelBtn = document.getElementById('wheel-btn');
-        if (punkty >= 1000) {
+        if (punkty >= 1000 && !isSpinning) {
             wheelBtn.disabled = false;
             wheelBtn.innerText = "Zakręć Kołem (Koszt: 1000 pkt)";
         } else {
             wheelBtn.disabled = true;
-            wheelBtn.innerText = `Zakręć Kołem (Wymagane: 1000 pkt)`;
+            wheelBtn.innerText = isSpinning ? "Trwa losowanie..." : `Zakręć Kołem (Wymagane: 1000 pkt)`;
         }
-
-        // Zapis w localStorage
-        localStorage.setItem('miloszka_punkty', punkty);
-        localStorage.setItem('miloszka_moc', mocKlikniecia);
-        localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
-        localStorage.setItem('miloszka_autoklik', autoKlikatory);
-        localStorage.setItem('miloszka_koszt_auto', kosztAutoKlikacza);
-        localStorage.setItem('miloszka_crit_mult', mnoznikCrit);
-        localStorage.setItem('miloszka_koszt_crit', kosztCrit);
-
-        sprawdzOsiagniecia();
     }
-</script>
 
+    aktualizujWidok();
+</script>
 </body>
 </html>
