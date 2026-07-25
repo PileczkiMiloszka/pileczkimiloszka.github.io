@@ -6,9 +6,13 @@
     <title>Słodkie Piłeczki Miłoszka - Klikacz Piłeczek</title>
     <link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #ffb6c1, #87cefa);
             color: white;
             text-align: center;
@@ -25,7 +29,7 @@
 
         @keyframes frenzyPulse {
             from { filter: brightness(1); }
-            to { filter: brightness(1.15); }
+            to { filter: brightness(1.18); }
         }
 
         nav {
@@ -34,6 +38,7 @@
             display: flex;
             justify-content: center;
             gap: 25px;
+            backdrop-filter: blur(5px);
         }
 
         nav a {
@@ -49,7 +54,7 @@
 
         header {
             background: rgba(0,0,0,0.25);
-            padding: 25px;
+            padding: 20px;
         }
 
         h1 {
@@ -63,12 +68,12 @@
             justify-content: center;
             gap: 25px;
             flex-wrap: wrap;
-            margin: 30px 20px;
+            margin: 25px 20px;
         }
 
         .ball {
-            width: 130px;
-            height: 130px;
+            width: 120px;
+            height: 120px;
             background: radial-gradient(circle at top, #ffffff, #ff69b4);
             border-radius: 50%;
             display: flex;
@@ -87,37 +92,68 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        .ball:active {
-            transform: scale(0.95);
-        }
-
         /* Główny panel gry */
         .game-zone {
-            background: rgba(0, 0, 0, 0.35);
-            max-width: 500px;
+            background: rgba(0, 0, 0, 0.4);
+            max-width: 520px;
             margin: 0 auto 30px auto;
             padding: 25px;
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
             position: relative;
         }
 
         #click-count {
-            font-size: 2.3em;
-            font-weight: bold;
-            margin: 10px 0;
+            font-size: 2.5em;
+            font-weight: 900;
+            margin: 10px 0 5px 0;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+            text-shadow: 0 3px 8px rgba(0,0,0,0.5);
+        }
+
+        #combo-info {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #ffeb3b;
+            min-height: 24px;
+        }
+
+        /* Wielka centralna ikona do klikania */
+        .clicker-target {
+            width: 160px;
+            height: 160px;
+            margin: 20px auto;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffffff, #ff70a6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.4), inset 0 -8px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.08s ease, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .clicker-target:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(255,215,0,0.4), inset 0 -8px 15px rgba(0,0,0,0.2);
+        }
+
+        .clicker-target:active {
+            transform: scale(0.90) rotate(-3deg);
         }
 
         /* Pasek Ładowania Złotego Szału */
         .frenzy-bar-container {
             width: 100%;
-            height: 16px;
+            height: 18px;
             background: rgba(255,255,255,0.2);
             border-radius: 10px;
             overflow: hidden;
-            margin: 15px 0;
+            margin: 12px 0 20px 0;
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
         }
 
@@ -128,97 +164,115 @@
             transition: width 0.1s linear;
         }
 
-        .main-btn {
-            padding: 20px 45px;
-            font-size: 28px;
-            border: none;
-            border-radius: 25px;
-            background: linear-gradient(180deg, #ffd700, #ff8c00);
-            color: #222;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            transition: transform 0.1s, filter 0.2s;
-            user-select: none;
-            margin: 10px 0;
-        }
-
-        .main-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        .main-btn:active {
-            transform: scale(0.92);
-        }
-
         /* Sekcja Skórek */
+        .skins-box {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 16px;
+            margin: 15px 0;
+        }
+
+        .skins-title {
+            font-size: 0.95em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
         .skins-container {
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin: 15px 0;
+            flex-wrap: wrap;
         }
 
         .skin-btn {
-            font-size: 22px;
-            background: rgba(255,255,255,0.2);
-            border: 2px solid transparent;
-            padding: 8px 12px;
-            border-radius: 12px;
+            font-size: 26px;
+            background: rgba(255,255,255,0.18);
+            border: 3px solid transparent;
+            width: 55px;
+            height: 55px;
+            border-radius: 16px;
             cursor: pointer;
-            transition: background 0.2s, border 0.2s;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .skin-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
         }
 
         .skin-btn.active {
-            border-color: gold;
-            background: rgba(255,215,0,0.4);
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.35);
+            box-shadow: 0 0 12px #ffd700;
+        }
+
+        .skin-btn.locked {
+            opacity: 0.4;
+            filter: grayscale(0.8);
+        }
+
+        .skin-btn .lock-icon {
+            position: absolute;
+            font-size: 12px;
+            bottom: 2px;
+            right: 4px;
         }
 
         /* Koło Fortuny */
         .wheel-box {
-            background: rgba(255,255,255,0.15);
+            background: rgba(255,255,255,0.12);
             padding: 15px;
-            border-radius: 15px;
+            border-radius: 16px;
             margin: 15px 0;
         }
 
         .wheel-btn {
-            background: #ff007f;
+            background: linear-gradient(135deg, #ff007f, #7928ca);
             color: white;
             border: none;
-            padding: 10px 20px;
-            font-size: 16px;
+            padding: 12px 24px;
+            font-size: 15px;
             border-radius: 12px;
             font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.1s, opacity 0.2s;
         }
 
         .wheel-btn:disabled {
             background: gray;
             cursor: not-allowed;
-            opacity: 0.6;
+            opacity: 0.5;
         }
 
         /* Sklepik */
         .shop {
-            margin-top: 25px;
+            margin-top: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .shop-btn {
-            padding: 12px 15px;
+            padding: 14px 18px;
             font-size: 14px;
             border: none;
-            border-radius: 12px;
+            border-radius: 14px;
             background: #00e676;
             color: #111;
             font-weight: bold;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+            text-align: left;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .shop-btn:hover {
@@ -226,22 +280,21 @@
         }
 
         .shop-btn:active {
-            transform: scale(0.97);
+            transform: scale(0.98);
         }
 
         /* Sekcja Osiągnięć */
         .achievements {
             background: rgba(0, 0, 0, 0.25);
-            max-width: 500px;
-            margin: 20px auto;
+            margin: 20px 0 10px 0;
             padding: 15px;
-            border-radius: 15px;
+            border-radius: 16px;
         }
 
         .badge-list {
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-top: 10px;
         }
@@ -250,7 +303,7 @@
             background: rgba(255,255,255,0.15);
             padding: 8px 12px;
             border-radius: 20px;
-            font-size: 0.85em;
+            font-size: 0.82em;
             opacity: 0.4;
             transition: opacity 0.3s, background 0.3s;
         }
@@ -265,50 +318,54 @@
 
         .bonus-present {
             position: fixed;
-            font-size: 38px;
+            font-size: 42px;
             cursor: pointer;
             user-select: none;
             z-index: 999;
             animation: bounce 0.6s infinite alternate;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
         }
 
         @keyframes bounce {
             from { transform: translateY(0); }
-            to { transform: translateY(-15px); }
+            to { transform: translateY(-18px); }
         }
 
+        /* Animowane napisy po kliknięciu */
         .floating-text {
             position: absolute;
-            font-weight: bold;
-            font-size: 22px;
+            font-weight: 900;
+            font-size: 26px;
             color: gold;
             pointer-events: none;
             animation: floatUp 0.8s ease-out forwards;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+            z-index: 100;
         }
 
         .floating-text.crit {
-            color: #ff3366;
-            font-size: 32px;
-            text-shadow: 0 0 10px #ff3366;
+            color: #ff2a6d;
+            font-size: 36px;
+            text-shadow: 0 0 12px #ff2a6d, 2px 2px 4px rgba(0,0,0,0.9);
         }
 
         @keyframes floatUp {
-            0% { opacity: 1; transform: translateY(0); }
-            100% { opacity: 0; transform: translateY(-60px); }
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-70px) scale(1.3); }
         }
 
-        /* Cząsteczki Efektów */
-        .particle {
+        /* Cząsteczki / Emoji z piłki */
+        .particle-emoji {
             position: absolute;
             pointer-events: none;
-            border-radius: 50%;
-            animation: particleFade 0.6s ease-out forwards;
+            font-size: 20px;
+            animation: particleFade 0.7s ease-out forwards;
+            z-index: 90;
         }
 
         @keyframes particleFade {
-            0% { opacity: 1; transform: translate(0, 0) scale(1); }
-            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
+            0% { opacity: 1; transform: translate(0, 0) scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.3) rotate(180deg); }
         }
 
         .reset-btn {
@@ -356,21 +413,27 @@
 <div class="game-zone" id="gra">
     <h2>🎮 Klikacz Piłeczek</h2>
     <div id="click-count">Punkty: 0</div>
+    <div id="combo-info">COMBO x1</div>
     <p id="stats-info">Moc: 1 | Autoklik/s: 0 | Krytyk: 15% (x5)</p>
-    
+
+    <div class="clicker-target" id="main-clicker" onclick="dodajPunkt(event)">
+        <span id="clicker-emoji">⚽</span>
+    </div>
+
     <div style="font-size: 0.85em; font-weight: bold; margin-top: 5px;" id="frenzy-label">⚡ Energia Złotego Szału</div>
     <div class="frenzy-bar-container">
         <div class="frenzy-bar" id="frenzy-bar"></div>
     </div>
 
-    <button class="main-btn" id="main-clicker" onclick="dodajPunkt(event)">KLIKAJ! ⚽</button>
-
-    <div class="skins-container">
-        <button class="skin-btn active" onclick="zmienSkorke('⚽', this)">⚽</button>
-        <button class="skin-btn" onclick="zmienSkorke('🍓', this)">🍓</button>
-        <button class="skin-btn" onclick="zmienSkorke('🍬', this)">🍬</button>
-        <button class="skin-btn" onclick="zmienSkorke('⭐', this)">⭐</button>
-        <button class="skin-btn" onclick="zmienSkorke('🏆', this)">🏆</button>
+    <div class="skins-box">
+        <div class="skins-title">🎨 Wybierz Skórkę Piłeczki:</div>
+        <div class="skins-container">
+            <button class="skin-btn" id="skin-⚽" onclick="zmienSkorke('⚽', 0)">⚽</button>
+            <button class="skin-btn" id="skin-🍓" onclick="zmienSkorke('🍓', 100)">🍓</button>
+            <button class="skin-btn" id="skin-🍬" onclick="zmienSkorke('🍬', 250)">🍬</button>
+            <button class="skin-btn" id="skin-⭐" onclick="zmienSkorke('⭐', 500)">⭐</button>
+            <button class="skin-btn" id="skin-🏆" onclick="zmienSkorke('🏆', 1000)">🏆</button>
+        </div>
     </div>
 
     <div class="wheel-box">
@@ -383,13 +446,13 @@
     <div class="shop">
         <h3>🛒 Sklep z ulepszeniami</h3>
         <button class="shop-btn" id="btn-upgrade" onclick="kupUlepszenie()">
-            Mocniejszy Klik (+1/klik) - Koszt: 10 pkt
+            <span>💪 Mocniejszy Klik (+1/klik)</span> <span id="cost-upgrade">Koszt: 10 pkt</span>
         </button>
         <button class="shop-btn" id="btn-autoclicker" onclick="kupAutoKlikacz()">
-            Autoklikacz (+1 pkt/s) - Koszt: 50 pkt
+            <span>🤖 Autoklikacz (+1 pkt/s)</span> <span id="cost-auto">Koszt: 50 pkt</span>
         </button>
         <button class="shop-btn" id="btn-crit" onclick="kupKrytyka()">
-            Lepszy Krytyk (+1 Mnożnik) - Koszt: 100 pkt
+            <span>💥 Lepszy Krytyk (+1 Mnożnik)</span> <span id="cost-crit">Koszt: 100 pkt</span>
         </button>
     </div>
 
@@ -412,7 +475,7 @@
 </footer>
 
 <script>
-    // System Dźwięku
+    // System Dźwięku Web Audio API
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -428,7 +491,7 @@
         osc.stop(audioCtx.currentTime + duration);
     }
 
-    // Inicjalizacja Zmiennych
+    // Inicjalizacja Zmiennych z localStorage
     let punkty = parseInt(localStorage.getItem('miloszka_punkty')) || 0;
     let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
     let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
@@ -441,34 +504,66 @@
     let frenzyProgress = 0;
     let isFrenzyActive = false;
 
-    // Ustawienie skórki przy ładowaniu
-    document.getElementById('main-clicker').innerText = `KLIKAJ! ${aktywneIcon}`;
+    // System Combo za szybkie klikanie
+    let comboCount = 0;
+    let comboMultiplier = 1;
+    let comboTimer = null;
 
+    // Definicje skórek i wymagań
+    const skorkiDef = {
+        '⚽': 0,
+        '🍓': 100,
+        '🍬': 250,
+        '⭐': 500,
+        '🏆': 1000
+    };
+
+    aktualizujSkorkeGlownejKuli();
     aktualizujWidok();
 
-    // Dodawanie punktu
+    // Dodawanie punktu po kliknięciu
     function dodajPunkt(event) {
+        // Obsługa Combo
+        comboCount++;
+        if (comboCount > 25) comboMultiplier = 5;
+        else if (comboCount > 15) comboMultiplier = 3;
+        else if (comboCount > 5) comboMultiplier = 2;
+        else comboMultiplier = 1;
+
+        clearTimeout(comboTimer);
+        comboTimer = setTimeout(() => {
+            comboCount = 0;
+            comboMultiplier = 1;
+            document.getElementById('combo-info').innerText = `COMBO x1`;
+        }, 1200);
+
+        if (comboMultiplier > 1) {
+            document.getElementById('combo-info').innerText = `🔥 COMBO x${comboMultiplier}! (${comboCount} kliknięć)`;
+        }
+
         let jestCrit = Math.random() < 0.15;
         let mnoznikSzalu = isFrenzyActive ? 2 : 1;
-        let zdobyte = jestCrit ? (mocKlikniecia * mnoznikCrit * mnoznikSzalu) : (mocKlikniecia * mnoznikSzalu);
+        let zdobyte = jestCrit ? 
+            (mocKlikniecia * mnoznikCrit * mnoznikSzalu * comboMultiplier) : 
+            (mocKlikniecia * mnoznikSzalu * comboMultiplier);
         
         punkty += zdobyte;
 
-        // Budowanie paska Złotego Szału
+        // Pasek Złotego Szału
         if (!isFrenzyActive) {
-            frenzyProgress += 4;
+            frenzyProgress += 3.5;
             if (frenzyProgress >= 100) {
                 aktywujZlotySzal();
             }
         }
 
-        tworzCzasteczki(event);
+        tworzCzasteczkiEmoji(event, aktywneIcon);
 
         if (jestCrit) {
             zagrajdzwiek(880, 'square', 0.15);
             tworzLatajacyTekst(event, `CRIT! +${zdobyte}`, true);
         } else {
-            zagrajdzwiek(400 + Math.random() * 100, 'sine', 0.05);
+            zagrajdzwiek(400 + Math.random() * 120, 'sine', 0.05);
             tworzLatajacyTekst(event, `+${zdobyte}`, false);
         }
 
@@ -476,7 +571,7 @@
         aktualizujWidok();
     }
 
-    // Złoty Szał
+    // Aktywacja Złotego Szału
     function aktywujZlotySzal() {
         isFrenzyActive = true;
         frenzyProgress = 100;
@@ -486,7 +581,7 @@
         odblokujBadge('badge-5');
 
         let interval = setInterval(() => {
-            frenzyProgress -= 2.5;
+            frenzyProgress -= 2;
             document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
             if (frenzyProgress <= 0) {
                 clearInterval(interval);
@@ -497,14 +592,28 @@
         }, 200);
     }
 
-    // Wybór skórki
-    function zmienSkorke(icon, btn) {
+    // Wybór i zmiana skórki
+    function zmienSkorke(icon, wymaganePkt) {
+        if (punkty < wymaganePkt && !jestSkorkaOdblokowana(icon)) {
+            alert(`Ta skórka wymaga co najmniej ${wymaganePkt} punktów!`);
+            return;
+        }
+
         aktywneIcon = icon;
         localStorage.setItem('miloszka_skin', icon);
-        document.getElementById('main-clicker').innerText = `KLIKAJ! ${icon}`;
-        document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        zagrajdzwiek(600, 'sine', 0.08);
+        
+        aktualizujSkorkeGlownejKuli();
+        zagrajdzwiek(650, 'sine', 0.08);
+        aktualizujWidok();
+    }
+
+    function jestSkorkaOdblokowana(icon) {
+        const koszt = skorkiDef[icon] || 0;
+        return punkty >= koszt;
+    }
+
+    function aktualizujSkorkeGlownejKuli() {
+        document.getElementById('clicker-emoji').innerText = aktywneIcon;
     }
 
     // Koło Fortuny
@@ -514,7 +623,7 @@
             const nagrody = [500, 1500, 3000, "MOC+2", 5000];
             const wygrana = nagrody[Math.floor(Math.random() * nagrody.length)];
             
-            zagrajdzwiek(800, 'triangle', 0.3);
+            zagrajdzwiek(850, 'triangle', 0.3);
 
             if (typeof wygrana === 'number') {
                 punkty += wygrana;
@@ -564,7 +673,7 @@
         }
     }
 
-    // Autoklik
+    // Autoklikacz
     setInterval(() => {
         if (autoKlikatory > 0) {
             punkty += autoKlikatory;
@@ -575,21 +684,21 @@
 
     // Losowe Prezenty
     setInterval(() => {
-        if (Math.random() < 0.6) stworzPrezent();
+        if (Math.random() < 0.5) stworzPrezent();
     }, 15000);
 
     function stworzPrezent() {
         const bonus = document.createElement('div');
         bonus.className = 'bonus-present';
         bonus.innerText = '🎁';
-        bonus.style.left = Math.random() * (window.innerWidth - 60) + 'px';
-        bonus.style.top = Math.random() * (window.innerHeight - 60) + 'px';
+        bonus.style.left = Math.random() * (window.innerWidth - 70) + 'px';
+        bonus.style.top = Math.random() * (window.innerHeight - 70) + 'px';
 
         bonus.onclick = () => {
-            let nagroda = Math.max(20, mocKlikniecia * 12);
+            let nagroda = Math.max(30, mocKlikniecia * 15);
             punkty += nagroda;
             zagrajdzwiek(1200, 'sine', 0.25);
-            alert(`🎉 Znalazłeś prezent! Otrzymujesz darmowe +${nagroda} punktów!`);
+            alert(`🎉 Znalazłeś prezent! Otrzymujesz +${nagroda} punktów!`);
             bonus.remove();
             aktualizujWidok();
         };
@@ -598,24 +707,22 @@
         setTimeout(() => { if (document.body.contains(bonus)) bonus.remove(); }, 6000);
     }
 
-    // Efekty Cząsteczek
-    function tworzCzasteczki(event) {
-        for (let i = 0; i < 6; i++) {
+    // Efekty cząsteczek z emoji aktualnej skórki
+    function tworzCzasteczkiEmoji(event, emoji) {
+        for (let i = 0; i < 5; i++) {
             const p = document.createElement('div');
-            p.className = 'particle';
-            p.style.width = Math.random() * 8 + 4 + 'px';
-            p.style.height = p.style.width;
-            p.style.background = isFrenzyActive ? 'gold' : '#ff69b4';
-            p.style.left = event.clientX + 'px';
-            p.style.top = event.clientY + 'px';
+            p.className = 'particle-emoji';
+            p.innerText = emoji;
+            p.style.left = (event.clientX + window.scrollX - 10) + 'px';
+            p.style.top = (event.clientY + window.scrollY - 10) + 'px';
             
-            let dx = (Math.random() - 0.5) * 100 + 'px';
-            let dy = (Math.random() - 0.5) * 100 + 'px';
+            let dx = (Math.random() - 0.5) * 120 + 'px';
+            let dy = (Math.random() - 0.5) * 120 + 'px';
             p.style.setProperty('--dx', dx);
             p.style.setProperty('--dy', dy);
 
             document.body.appendChild(p);
-            setTimeout(() => p.remove(), 600);
+            setTimeout(() => p.remove(), 700);
         }
     }
 
@@ -626,7 +733,6 @@
         if (punkty >= 1000) odblokujBadge('badge-3');
         if (punkty >= 10000) odblokujBadge('badge-4');
 
-        // Odsetek osiągnięć
         let total = document.querySelectorAll('.badge').length;
         let unlocked = document.querySelectorAll('.badge.unlocked').length;
         document.getElementById('ach-percent').innerText = Math.round((unlocked / total) * 100);
@@ -655,8 +761,8 @@
         const el = document.createElement('div');
         el.className = 'floating-text' + (isCrit ? ' crit' : '');
         el.innerText = tekst;
-        el.style.left = (event.clientX - 10) + 'px';
-        el.style.top = (event.clientY - 20) + 'px';
+        el.style.left = (event.clientX + window.scrollX - 15) + 'px';
+        el.style.top = (event.clientY + window.scrollY - 25) + 'px';
         document.body.appendChild(el);
         setTimeout(() => el.remove(), 800);
     }
@@ -671,15 +777,31 @@
     function aktualizujWidok() {
         document.getElementById("click-count").innerText = "Punkty: " + punkty;
         document.getElementById("stats-info").innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
-        document.getElementById("btn-upgrade").innerText = `Mocniejszy Klik (+1/klik) - Koszt: ${kosztUlepszenia} pkt`;
-        document.getElementById("btn-autoclicker").innerText = `Autoklikacz (+1 pkt/s) - Koszt: ${kosztAutoKlikacza} pkt`;
-        document.getElementById("btn-crit").innerText = `Lepszy Krytyk (+1 Mnożnik) - Koszt: ${kosztCrit} pkt`;
+        
+        document.getElementById("cost-upgrade").innerText = `Koszt: ${kosztUlepszenia} pkt`;
+        document.getElementById("cost-auto").innerText = `Koszt: ${kosztAutoKlikacza} pkt`;
+        document.getElementById("cost-crit").innerText = `Koszt: ${kosztCrit} pkt`;
 
         if (!isFrenzyActive) {
             document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
         }
 
-        // Aktywacja Koła Fortuny
+        // Aktualizacja stanu skórek
+        Object.keys(skorkiDef).forEach(icon => {
+            const btn = document.getElementById(`skin-${icon}`);
+            if (btn) {
+                const koszt = skorkiDef[icon];
+                if (aktywneIcon === icon) {
+                    btn.className = 'skin-btn active';
+                } else if (punkty >= koszt) {
+                    btn.className = 'skin-btn';
+                } else {
+                    btn.className = 'skin-btn locked';
+                }
+            }
+        });
+
+        // Koło Fortuny
         const wheelBtn = document.getElementById('wheel-btn');
         if (punkty >= 1000) {
             wheelBtn.disabled = false;
@@ -689,7 +811,7 @@
             wheelBtn.innerText = `Zakręć Kołem (Wymagane: 1000 pkt)`;
         }
 
-        // Zapis
+        // Zapis w localStorage
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
         localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
