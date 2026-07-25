@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Słodkie Piłeczki Miłoszka - Super Clicker Deluxe</title>
+    <title>Słodkie Piłeczki Miłoszka - Klikacz Piłeczek</title>
     <link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
     <style>
         body {
@@ -14,9 +14,20 @@
             text-align: center;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background 0.5s;
         }
 
-        /* Menu nawigacji */
+        /* Pasek Złotego Szału */
+        body.golden-frenzy {
+            background: linear-gradient(135deg, #ffe066, #ff8c00) !important;
+            animation: frenzyPulse 0.8s infinite alternate;
+        }
+
+        @keyframes frenzyPulse {
+            from { filter: brightness(1); }
+            to { filter: brightness(1.15); }
+        }
+
         nav {
             background: rgba(0, 0, 0, 0.4);
             padding: 12px;
@@ -47,7 +58,6 @@
             text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
 
-        /* Piłeczki dekoracyjne */
         .balls {
             display: flex;
             justify-content: center;
@@ -84,7 +94,7 @@
         /* Główny panel gry */
         .game-zone {
             background: rgba(0, 0, 0, 0.35);
-            max-width: 480px;
+            max-width: 500px;
             margin: 0 auto 30px auto;
             padding: 25px;
             border-radius: 20px;
@@ -93,18 +103,36 @@
         }
 
         #click-count {
-            font-size: 2.2em;
+            font-size: 2.3em;
             font-weight: bold;
             margin: 10px 0;
             color: #fff;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
 
+        /* Pasek Ładowania Złotego Szału */
+        .frenzy-bar-container {
+            width: 100%;
+            height: 16px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .frenzy-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #ffd700, #ff4500);
+            transition: width 0.1s linear;
+        }
+
         .main-btn {
-            padding: 18px 40px;
-            font-size: 24px;
+            padding: 20px 45px;
+            font-size: 28px;
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             background: linear-gradient(180deg, #ffd700, #ff8c00);
             color: #222;
             cursor: pointer;
@@ -112,6 +140,7 @@
             box-shadow: 0 6px 15px rgba(0,0,0,0.3);
             transition: transform 0.1s, filter 0.2s;
             user-select: none;
+            margin: 10px 0;
         }
 
         .main-btn:hover {
@@ -120,6 +149,55 @@
 
         .main-btn:active {
             transform: scale(0.92);
+        }
+
+        /* Sekcja Skórek */
+        .skins-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .skin-btn {
+            font-size: 22px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid transparent;
+            padding: 8px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.2s, border 0.2s;
+        }
+
+        .skin-btn.active {
+            border-color: gold;
+            background: rgba(255,215,0,0.4);
+        }
+
+        /* Koło Fortuny */
+        .wheel-box {
+            background: rgba(255,255,255,0.15);
+            padding: 15px;
+            border-radius: 15px;
+            margin: 15px 0;
+        }
+
+        .wheel-btn {
+            background: #ff007f;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .wheel-btn:disabled {
+            background: gray;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         /* Sklepik */
@@ -154,7 +232,7 @@
         /* Sekcja Osiągnięć */
         .achievements {
             background: rgba(0, 0, 0, 0.25);
-            max-width: 480px;
+            max-width: 500px;
             margin: 20px auto;
             padding: 15px;
             border-radius: 15px;
@@ -172,7 +250,7 @@
             background: rgba(255,255,255,0.15);
             padding: 8px 12px;
             border-radius: 20px;
-            font-size: 0.9em;
+            font-size: 0.85em;
             opacity: 0.4;
             transition: opacity 0.3s, background 0.3s;
         }
@@ -185,10 +263,9 @@
             box-shadow: 0 0 10px gold;
         }
 
-        /* Latający prezent-niespodzianka */
         .bonus-present {
             position: fixed;
-            font-size: 35px;
+            font-size: 38px;
             cursor: pointer;
             user-select: none;
             z-index: 999;
@@ -200,7 +277,6 @@
             to { transform: translateY(-15px); }
         }
 
-        /* Animacja latających cyferek */
         .floating-text {
             position: absolute;
             font-weight: bold;
@@ -213,13 +289,26 @@
 
         .floating-text.crit {
             color: #ff3366;
-            font-size: 30px;
+            font-size: 32px;
             text-shadow: 0 0 10px #ff3366;
         }
 
         @keyframes floatUp {
             0% { opacity: 1; transform: translateY(0); }
             100% { opacity: 0; transform: translateY(-60px); }
+        }
+
+        /* Cząsteczki Efektów */
+        .particle {
+            position: absolute;
+            pointer-events: none;
+            border-radius: 50%;
+            animation: particleFade 0.6s ease-out forwards;
+        }
+
+        @keyframes particleFade {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0.2); }
         }
 
         .reset-btn {
@@ -265,11 +354,31 @@
 </section>
 
 <div class="game-zone" id="gra">
-    <h2>🎮 Klikacz Piłeczek Deluxe</h2>
+    <h2>🎮 Klikacz Piłeczek</h2>
     <div id="click-count">Punkty: 0</div>
     <p id="stats-info">Moc: 1 | Autoklik/s: 0 | Krytyk: 15% (x5)</p>
     
-    <button class="main-btn" onclick="dodajPunkt(event)">KLIKAJ! 🎉</button>
+    <div style="font-size: 0.85em; font-weight: bold; margin-top: 5px;" id="frenzy-label">⚡ Energia Złotego Szału</div>
+    <div class="frenzy-bar-container">
+        <div class="frenzy-bar" id="frenzy-bar"></div>
+    </div>
+
+    <button class="main-btn" id="main-clicker" onclick="dodajPunkt(event)">KLIKAJ! ⚽</button>
+
+    <div class="skins-container">
+        <button class="skin-btn active" onclick="zmienSkorke('⚽', this)">⚽</button>
+        <button class="skin-btn" onclick="zmienSkorke('🍓', this)">🍓</button>
+        <button class="skin-btn" onclick="zmienSkorke('🍬', this)">🍬</button>
+        <button class="skin-btn" onclick="zmienSkorke('⭐', this)">⭐</button>
+        <button class="skin-btn" onclick="zmienSkorke('🏆', this)">🏆</button>
+    </div>
+
+    <div class="wheel-box">
+        <div style="font-weight: bold; margin-bottom: 8px;">🎡 Słodkie Koło Fortuny</div>
+        <button class="wheel-btn" id="wheel-btn" onclick="zakrecKolem()" disabled>
+            Zakręć (Wymagane: 1000 pkt)
+        </button>
+    </div>
 
     <div class="shop">
         <h3>🛒 Sklep z ulepszeniami</h3>
@@ -285,12 +394,13 @@
     </div>
 
     <div class="achievements" id="osiagniecia">
-        <h3>🏆 Osiągnięcia</h3>
+        <h3>🏆 Osiągnięcia (<span id="ach-percent">0</span>%)</h3>
         <div class="badge-list">
             <span class="badge" id="badge-1">🌱 Pierwsze 10 pkt</span>
             <span class="badge" id="badge-2">🔥 100 Punkcików</span>
             <span class="badge" id="badge-3">⚡ 1,000 Punktów!</span>
             <span class="badge" id="badge-4">👑 Król Piłeczek (10k)</span>
+            <span class="badge" id="badge-5">💥 Super Złoty Szał</span>
         </div>
     </div>
 
@@ -302,7 +412,7 @@
 </footer>
 
 <script>
-    // System Dźwięku (Syntetyczny audio-generator)
+    // System Dźwięku
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -318,7 +428,7 @@
         osc.stop(audioCtx.currentTime + duration);
     }
 
-    // Inicjalizacja zmiennych z pamieci
+    // Inicjalizacja Zmiennych
     let punkty = parseInt(localStorage.getItem('miloszka_punkty')) || 0;
     let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
     let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
@@ -326,15 +436,33 @@
     let kosztAutoKlikacza = parseInt(localStorage.getItem('miloszka_koszt_auto')) || 50;
     let mnoznikCrit = parseInt(localStorage.getItem('miloszka_crit_mult')) || 5;
     let kosztCrit = parseInt(localStorage.getItem('miloszka_koszt_crit')) || 100;
+    
+    let aktywneIcon = localStorage.getItem('miloszka_skin') || '⚽';
+    let frenzyProgress = 0;
+    let isFrenzyActive = false;
+
+    // Ustawienie skórki przy ładowaniu
+    document.getElementById('main-clicker').innerText = `KLIKAJ! ${aktywneIcon}`;
 
     aktualizujWidok();
 
     // Dodawanie punktu
     function dodajPunkt(event) {
-        let jestCrit = Math.random() < 0.15; // 15% szansy na krytyka
-        let zdobyte = jestCrit ? (mocKlikniecia * mnoznikCrit) : mocKlikniecia;
+        let jestCrit = Math.random() < 0.15;
+        let mnoznikSzalu = isFrenzyActive ? 2 : 1;
+        let zdobyte = jestCrit ? (mocKlikniecia * mnoznikCrit * mnoznikSzalu) : (mocKlikniecia * mnoznikSzalu);
         
         punkty += zdobyte;
+
+        // Budowanie paska Złotego Szału
+        if (!isFrenzyActive) {
+            frenzyProgress += 4;
+            if (frenzyProgress >= 100) {
+                aktywujZlotySzal();
+            }
+        }
+
+        tworzCzasteczki(event);
 
         if (jestCrit) {
             zagrajdzwiek(880, 'square', 0.15);
@@ -346,6 +474,57 @@
 
         sprawdzOsiagniecia();
         aktualizujWidok();
+    }
+
+    // Złoty Szał
+    function aktywujZlotySzal() {
+        isFrenzyActive = true;
+        frenzyProgress = 100;
+        document.body.classList.add('golden-frenzy');
+        document.getElementById('frenzy-label').innerText = '🔥 ZŁOTY SZAŁ (PUNKTY x2)! 🔥';
+        zagrajdzwiek(1000, 'sawtooth', 0.4);
+        odblokujBadge('badge-5');
+
+        let interval = setInterval(() => {
+            frenzyProgress -= 2.5;
+            document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
+            if (frenzyProgress <= 0) {
+                clearInterval(interval);
+                isFrenzyActive = false;
+                document.body.classList.remove('golden-frenzy');
+                document.getElementById('frenzy-label').innerText = '⚡ Energia Złotego Szału';
+            }
+        }, 200);
+    }
+
+    // Wybór skórki
+    function zmienSkorke(icon, btn) {
+        aktywneIcon = icon;
+        localStorage.setItem('miloszka_skin', icon);
+        document.getElementById('main-clicker').innerText = `KLIKAJ! ${icon}`;
+        document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        zagrajdzwiek(600, 'sine', 0.08);
+    }
+
+    // Koło Fortuny
+    function zakrecKolem() {
+        if (punkty >= 1000) {
+            punkty -= 1000;
+            const nagrody = [500, 1500, 3000, "MOC+2", 5000];
+            const wygrana = nagrody[Math.floor(Math.random() * nagrody.length)];
+            
+            zagrajdzwiek(800, 'triangle', 0.3);
+
+            if (typeof wygrana === 'number') {
+                punkty += wygrana;
+                alert(`🎉 Wygrałeś na Kole Fortuny: +${wygrana} punktów!`);
+            } else {
+                mocKlikniecia += 2;
+                alert(`🎉 Wygrałeś darmowy poziom mocy: Moc +2!`);
+            }
+            aktualizujWidok();
+        }
     }
 
     // Sklep
@@ -385,7 +564,7 @@
         }
     }
 
-    // Pętla Autoklikacza
+    // Autoklik
     setInterval(() => {
         if (autoKlikatory > 0) {
             punkty += autoKlikatory;
@@ -394,11 +573,9 @@
         }
     }, 1000);
 
-    // Losowy Prezent-Niespodzianka (pojawia się co 15 sekund)
+    // Losowe Prezenty
     setInterval(() => {
-        if (Math.random() < 0.6) { // 60% szans na pojawienie się
-            stworzPrezent();
-        }
+        if (Math.random() < 0.6) stworzPrezent();
     }, 15000);
 
     function stworzPrezent() {
@@ -409,7 +586,7 @@
         bonus.style.top = Math.random() * (window.innerHeight - 60) + 'px';
 
         bonus.onclick = () => {
-            let nagroda = Math.max(15, mocKlikniecia * 10);
+            let nagroda = Math.max(20, mocKlikniecia * 12);
             punkty += nagroda;
             zagrajdzwiek(1200, 'sine', 0.25);
             alert(`🎉 Znalazłeś prezent! Otrzymujesz darmowe +${nagroda} punktów!`);
@@ -418,11 +595,28 @@
         };
 
         document.body.appendChild(bonus);
+        setTimeout(() => { if (document.body.contains(bonus)) bonus.remove(); }, 6000);
+    }
 
-        // Znika sam po 6 sekundach jeśli nie zostanie kliknięty
-        setTimeout(() => {
-            if (document.body.contains(bonus)) bonus.remove();
-        }, 6000);
+    // Efekty Cząsteczek
+    function tworzCzasteczki(event) {
+        for (let i = 0; i < 6; i++) {
+            const p = document.createElement('div');
+            p.className = 'particle';
+            p.style.width = Math.random() * 8 + 4 + 'px';
+            p.style.height = p.style.width;
+            p.style.background = isFrenzyActive ? 'gold' : '#ff69b4';
+            p.style.left = event.clientX + 'px';
+            p.style.top = event.clientY + 'px';
+            
+            let dx = (Math.random() - 0.5) * 100 + 'px';
+            let dy = (Math.random() - 0.5) * 100 + 'px';
+            p.style.setProperty('--dx', dx);
+            p.style.setProperty('--dy', dy);
+
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 600);
+        }
     }
 
     // Osiągnięcia
@@ -431,6 +625,11 @@
         if (punkty >= 100) odblokujBadge('badge-2');
         if (punkty >= 1000) odblokujBadge('badge-3');
         if (punkty >= 10000) odblokujBadge('badge-4');
+
+        // Odsetek osiągnięć
+        let total = document.querySelectorAll('.badge').length;
+        let unlocked = document.querySelectorAll('.badge.unlocked').length;
+        document.getElementById('ach-percent').innerText = Math.round((unlocked / total) * 100);
     }
 
     function odblokujBadge(id) {
@@ -440,7 +639,6 @@
         }
     }
 
-    // Efekty Wizualne
     function zmienKolor(element) {
         const kolory = [
             'radial-gradient(circle at top, #ffffff, #ff1493)',
@@ -470,7 +668,6 @@
         }
     }
 
-    // Odświeżanie Widoku i Zapis
     function aktualizujWidok() {
         document.getElementById("click-count").innerText = "Punkty: " + punkty;
         document.getElementById("stats-info").innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
@@ -478,7 +675,21 @@
         document.getElementById("btn-autoclicker").innerText = `Autoklikacz (+1 pkt/s) - Koszt: ${kosztAutoKlikacza} pkt`;
         document.getElementById("btn-crit").innerText = `Lepszy Krytyk (+1 Mnożnik) - Koszt: ${kosztCrit} pkt`;
 
-        // Zapis stanu gry
+        if (!isFrenzyActive) {
+            document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
+        }
+
+        // Aktywacja Koła Fortuny
+        const wheelBtn = document.getElementById('wheel-btn');
+        if (punkty >= 1000) {
+            wheelBtn.disabled = false;
+            wheelBtn.innerText = "Zakręć Kołem (Koszt: 1000 pkt)";
+        } else {
+            wheelBtn.disabled = true;
+            wheelBtn.innerText = `Zakręć Kołem (Wymagane: 1000 pkt)`;
+        }
+
+        // Zapis
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
         localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
