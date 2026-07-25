@@ -420,19 +420,21 @@
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
         }
 
-        .bonus-present {
+        /* Latający bonusowy prezent */
+        .flying-present {
             position: fixed;
-            font-size: 42px;
+            font-size: 45px;
             cursor: pointer;
             user-select: none;
-            z-index: 999;
-            animation: bounce 0.6s infinite alternate;
-            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.4));
+            z-index: 9999;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+            transition: transform 0.1s;
+            animation: pulsePresent 0.5s infinite alternate;
         }
 
-        @keyframes bounce {
-            from { transform: translateY(0); }
-            to { transform: translateY(-18px); }
+        @keyframes pulsePresent {
+            from { transform: scale(1); }
+            to { transform: scale(1.15); }
         }
 
         /* Animowane napisy po kliknięciu */
@@ -563,6 +565,9 @@
         <button class="shop-btn" id="btn-crit" onclick="kupKrytyka()">
             <span>💥 Lepszy Krytyk (+1 Mnożnik)</span> <span id="cost-crit">Koszt: 100 pkt</span>
         </button>
+        <button class="shop-btn" id="btn-time" onclick="kupPettleCzasowa()">
+            <span>⏳ Pętla Czasu (Szybsze Autokliki)</span> <span id="cost-time">Koszt: 300 pkt</span>
+        </button>
     </div>
 
     <div class="achievements" id="osiagniecia">
@@ -573,6 +578,7 @@
             <span class="badge" id="badge-3">⚡ 1,000 Punktów!</span>
             <span class="badge" id="badge-4">👑 Król Piłeczek (10k)</span>
             <span class="badge" id="badge-5">💥 Super Złoty Szał</span>
+            <span class="badge" id="badge-6">🎁 Łowca Prezentów</span>
         </div>
     </div>
 
@@ -583,7 +589,7 @@
 <div class="sandbox-zone" id="fizyka">
     <h2>🧪 Plac Zabaw Fizyki Piłeczek</h2>
     <p style="font-size: 0.9em; margin-bottom: 5px;">
-        💡 <b>Zarobek:</b> LPM stwarza piłkę (+Moc Kliknięcia) | PPM lub kliknięcie piłki rozbija ją (+Bonus)! | Zderzenia piłek = dodatkowe pkt!
+        💡 <b>Zarobek (Znerfowany):</b> LPM tworzy piłkę (+Moc) | Rozbicie: +Moc x1.5 | Zderzenia: +0.1 pkt | Max 30 piłek na raz!
     </p>
     <canvas id="physics-canvas" width="650" height="350"></canvas>
     
@@ -596,11 +602,11 @@
             <label for="bounce-slider">Odbicie: <span id="bounce-val">0.8</span></label>
             <input type="range" id="bounce-slider" min="0.2" max="1" step="0.05" value="0.8">
         </div>
-        <button class="action-btn" onclick="stworzDeszczPilek()">🌧️ Deszcz Piłek (x20)</button>
+        <button class="action-btn" onclick="stworzDeszczPilek()">🌧️ Deszcz Piłek (x8)</button>
         <button class="action-btn danger" onclick="wyczyscKolo()">🧹 Wyczyść Screen</button>
     </div>
     <div style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">
-        Liczba piłeczek na ekranie: <b id="ball-count">0</b> | Zarobiono z Fizyki: <b id="physics-earnings">0</b> pkt
+        Liczba piłeczek na ekranie: <b id="ball-count">0</b>/30 | Zarobiono z Fizyki: <b id="physics-earnings">0</b> pkt
     </div>
 </div>
 
@@ -670,6 +676,7 @@
     const canvas = document.getElementById('physics-canvas');
     const ctx = canvas.getContext('2d');
     let physicsBalls = [];
+    const MAX_BALLS = 30; // ZNERFOWANE: Limit piłek
 
     let gravity = 0.3;
     let bounce = 0.8;
@@ -696,7 +703,7 @@
             this.vx = (Math.random() - 0.5) * 12;
             this.vy = (Math.random() - 0.5) * 10;
             this.color = `hsl(${Math.random() * 360}, 85%, 60%)`;
-            this.cooldownKolizji = 0; // zapobiega zbyt częstemu spamowi punktów z jednej kolizji
+            this.cooldownKolizji = 0;
         }
 
         update() {
@@ -706,7 +713,6 @@
 
             if (this.cooldownKolizji > 0) this.cooldownKolizji--;
 
-            // Odbicia od ścianek
             if (this.x + this.radius > canvas.width) {
                 this.x = canvas.width - this.radius;
                 this.vx *= -bounce;
@@ -718,7 +724,7 @@
             if (this.y + this.radius > canvas.height) {
                 this.y = canvas.height - this.radius;
                 this.vy *= -bounce;
-                this.vx *= 0.98; // Tarcie
+                this.vx *= 0.98;
             } else if (this.y - this.radius < 0) {
                 this.y = this.radius;
                 this.vy *= -bounce;
@@ -737,7 +743,7 @@
         }
     }
 
-    // Zaawansowana kolizja z DODATKIEM ZARABIANIA PUNKTÓW!
+    // Znerfowane zarabianie z kolizji
     function checkBallCollisions() {
         for (let i = 0; i < physicsBalls.length; i++) {
             for (let j = i + 1; j < physicsBalls.length; j++) {
@@ -767,18 +773,17 @@
                     b2.vx += p * b1.mass * nx;
                     b2.vy += p * b1.mass * ny;
 
-                    // 💥 ZARABIANIE NA KOLIZJI Z PIŁECZKAMI 💥
+                    // 💥 ZNERFOWANE ZARABIANIE: Zamiast 1 pkt daje 0.1 pkt
                     if (b1.cooldownKolizji === 0 && b2.cooldownKolizji === 0) {
-                        b1.cooldownKolizji = 15;
-                        b2.cooldownKolizji = 15;
-                        dodajPunktyZFizyki(1); // 1 punkt za zderzenie!
+                        b1.cooldownKolizji = 20;
+                        b2.cooldownKolizji = 20;
+                        dodajPunktyZFizyki(0.1);
                     }
                 }
             }
         }
     }
 
-    // Obsługa kliknięć w canvas (LPM & PPM)
     canvas.addEventListener('mousedown', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -786,7 +791,6 @@
         const x = (e.clientX - rect.left) * scaleX;
         const y = (e.clientY - rect.top) * scaleY;
 
-        // Sprawdź czy kliknięto w istniejącą piłkę (aby ją usunąć i dać bonus)
         let hitIndex = -1;
         for (let i = 0; i < physicsBalls.length; i++) {
             let b = physicsBalls[i];
@@ -796,15 +800,18 @@
             }
         }
 
-        if (hitIndex !== -1 || e.button === 2) { // Kliknięto piłkę lub PPM
+        if (hitIndex !== -1 || e.button === 2) {
             if (hitIndex !== -1) {
                 physicsBalls.splice(hitIndex, 1);
-                let bonus = mocKlikniecia * 5;
+                // ZNERFOWANY BONUS: Moc * 1.5 zamiast Moc * 5
+                let bonus = Math.max(1, Math.floor(mocKlikniecia * 1.5));
                 dodajPunktyZFizyki(bonus, e, `💥 POP! +${bonus}`);
                 zagrajdzwiek(900, 'square', 0.08);
             }
         } else {
-            // Dodajemy nową piłkę + przyznajemy punkty jak za kliknięcie
+            if (physicsBalls.length >= MAX_BALLS) {
+                physicsBalls.shift(); // Usuwa najstarszą piłkę
+            }
             physicsBalls.push(new PhysicsBall(x, y));
             let zysk = mocKlikniecia;
             dodajPunktyZFizyki(zysk, e, `+${zysk}`);
@@ -813,17 +820,17 @@
         aktualizujLicznikPilek();
     });
 
-    // Zapobiegamy otwieraniu menu kontekstowego przy klikaniu PPM w canvas
     canvas.addEventListener('contextmenu', e => e.preventDefault());
 
     function stworzDeszczPilek() {
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 8; i++) {
+            if (physicsBalls.length >= MAX_BALLS) physicsBalls.shift();
             physicsBalls.push(new PhysicsBall(
                 Math.random() * (canvas.width - 40) + 20,
                 Math.random() * 50 + 10
             ));
         }
-        let zysk = mocKlikniecia * 5;
+        let zysk = mocKlikniecia * 2;
         dodajPunktyZFizyki(zysk, null, "");
         zagrajdzwiek(700, 'triangle', 0.15);
         aktualizujLicznikPilek();
@@ -841,15 +848,9 @@
     function loopFizyki() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        physicsBalls.forEach(ball => {
-            ball.update();
-        });
-
+        physicsBalls.forEach(ball => ball.update());
         checkBallCollisions();
-
-        physicsBalls.forEach(ball => {
-            ball.draw();
-        });
+        physicsBalls.forEach(ball => ball.draw());
 
         requestAnimationFrame(loopFizyki);
     }
@@ -874,7 +875,7 @@
         osc.stop(audioCtx.currentTime + duration);
     }
 
-    let punkty = parseInt(localStorage.getItem('miloszka_punkty')) || 0;
+    let punkty = parseFloat(localStorage.getItem('miloszka_punkty')) || 0;
     let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
     let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
     let autoKlikatory = parseInt(localStorage.getItem('miloszka_autoklik')) || 0;
@@ -882,6 +883,9 @@
     let mnoznikCrit = parseInt(localStorage.getItem('miloszka_crit_mult')) || 5;
     let kosztCrit = parseInt(localStorage.getItem('miloszka_koszt_crit')) || 100;
     
+    let predkoscPetli = parseInt(localStorage.getItem('miloszka_time_speed')) || 1;
+    let kosztPetli = parseInt(localStorage.getItem('miloszka_koszt_time')) || 300;
+
     let aktywneIcon = localStorage.getItem('miloszka_skin') || '⚽';
     let frenzyProgress = 0;
     let isFrenzyActive = false;
@@ -897,8 +901,6 @@
         '⭐': 500,
         '🏆': 1000
     };
-
-    aktualizujSkorkeGlownejKuli();
 
     function dodajPunkt(event) {
         comboCount++;
@@ -931,7 +933,7 @@
             if (frenzyProgress >= 100) {
                 aktywujZlotySzal();
             }
-            document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
+            document.getElementById('frenzy-bar').style.width = Math.min(100, frenzyProgress) + '%';
         }
 
         tworzCzasteczkiEmoji(event, aktywneIcon);
@@ -960,7 +962,7 @@
 
         let interval = setInterval(() => {
             frenzyProgress -= 2;
-            document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
+            document.getElementById('frenzy-bar').style.width = Math.max(0, frenzyProgress) + '%';
             if (frenzyProgress <= 0) {
                 clearInterval(interval);
                 isFrenzyActive = false;
@@ -978,96 +980,27 @@
 
         aktywneIcon = icon;
         localStorage.setItem('miloszka_skin', icon);
-        
         aktualizujSkorkeGlownejKuli();
         zagrajdzwiek(650, 'sine', 0.08);
         aktualizujWidok();
     }
 
     function jestSkorkaOdblokowana(icon) {
-        const koszt = skorkiDef[icon] || 0;
-        return punkty >= koszt;
+        return punkty >= skorkiDef[icon];
     }
 
     function aktualizujSkorkeGlownejKuli() {
         document.getElementById('clicker-emoji').innerText = aktywneIcon;
     }
 
-    // --- WIZUALNE KOŁO FORTUNY ---
-    const wCanvas = document.getElementById('wheel-canvas');
-    const wCtx = wCanvas.getContext('2d');
-    const wheelRewards = [500, 1500, "MOC+2", 3000, 100, 5000];
-    const wheelColors = ['#ff4081', '#7c4dff', '#00e676', '#ffeb3b', '#ff9100', '#00b0ff'];
-    let currentWheelRotation = 0;
-    let isSpinning = false;
-
-    function drawWheel() {
-        const numOptions = wheelRewards.length;
-        const arcSize = (2 * Math.PI) / numOptions;
-        
-        wCtx.clearRect(0, 0, wCanvas.width, wCanvas.height);
-        
-        for (let i = 0; i < numOptions; i++) {
-            wCtx.beginPath();
-            wCtx.fillStyle = wheelColors[i % wheelColors.length];
-            wCtx.moveTo(90, 90);
-            wCtx.arc(90, 90, 90, i * arcSize, (i + 1) * arcSize);
-            wCtx.fill();
-            wCtx.stroke();
-            
-            wCtx.save();
-            wCtx.translate(90, 90);
-            wCtx.rotate(i * arcSize + arcSize / 2);
-            wCtx.fillStyle = "white";
-            wCtx.font = "bold 13px sans-serif";
-            wCtx.textAlign = "right";
-            wCtx.fillText(wheelRewards[i], 80, 5);
-            wCtx.restore();
-        }
-    }
-    drawWheel();
-
-    function zakrecKolem() {
-        if (isSpinning || punkty < 1000) return;
-
-        punkty -= 1000;
-        isSpinning = true;
-        aktualizujWidok();
-
-        const rewardIndex = Math.floor(Math.random() * wheelRewards.length);
-        const segmentDegrees = 360 / wheelRewards.length;
-        const targetDegree = 360 - (rewardIndex * segmentDegrees + segmentDegrees / 2);
-        const totalRotation = currentWheelRotation + 1800 + targetDegree - (currentWheelRotation % 360);
-        
-        currentWheelRotation = totalRotation;
-        wCanvas.style.transform = `rotate(${currentWheelRotation}deg)`;
-
-        zagrajdzwiek(800, 'triangle', 0.5);
-
-        setTimeout(() => {
-            isSpinning = false;
-            const wygrana = wheelRewards[rewardIndex];
-
-            if (typeof wygrana === 'number') {
-                punkty += wygrana;
-                alert(`🎉 Wygrałeś: +${wygrana} punktów!`);
-            } else {
-                mocKlikniecia += 2;
-                alert(`🎉 Wygrałeś: Moc +2!`);
-            }
-            aktualizujWidok();
-        }, 4000);
-    }
-
+    // --- Kupowanie w Sklepie ---
     function kupUlepszenie() {
         if (punkty >= kosztUlepszenia) {
             punkty -= kosztUlepszenia;
             mocKlikniecia += 1;
             kosztUlepszenia = Math.floor(kosztUlepszenia * 1.5);
-            zagrajdzwiek(600, 'triangle', 0.1);
+            zagrajdzwiek(600, 'sine', 0.1);
             aktualizujWidok();
-        } else {
-            alert("Brakuje Ci punktów!");
         }
     }
 
@@ -1076,10 +1009,8 @@
             punkty -= kosztAutoKlikacza;
             autoKlikatory += 1;
             kosztAutoKlikacza = Math.floor(kosztAutoKlikacza * 1.6);
-            zagrajdzwiek(700, 'triangle', 0.1);
+            zagrajdzwiek(750, 'sine', 0.1);
             aktualizujWidok();
-        } else {
-            alert("Brakuje Ci punktów!");
         }
     }
 
@@ -1087,47 +1018,117 @@
         if (punkty >= kosztCrit) {
             punkty -= kosztCrit;
             mnoznikCrit += 1;
-            kosztCrit = Math.floor(kosztCrit * 2);
-            zagrajdzwiek(900, 'sine', 0.15);
+            kosztCrit = Math.floor(kosztCrit * 1.8);
+            zagrajdzwiek(850, 'sine', 0.1);
             aktualizujWidok();
-        } else {
-            alert("Brakuje Ci punktów!");
         }
     }
 
+    function kupPettleCzasowa() {
+        if (punkty >= kosztPetli) {
+            punkty -= kosztPetli;
+            predkoscPetli += 1;
+            kosztPetli = Math.floor(kosztPetli * 2.2);
+            zagrajdzwiek(950, 'sine', 0.12);
+            aktualizujWidok();
+        }
+    }
+
+    // --- Nowa Funkcja: Latający Prezent ---
+    function spawnowajPrezent() {
+        const p = document.createElement('div');
+        p.className = 'flying-present';
+        p.innerText = '🎁';
+        p.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        p.style.left = '-60px';
+
+        document.body.appendChild(p);
+
+        let posX = -60;
+        let anim = setInterval(() => {
+            posX += 3;
+            p.style.left = posX + 'px';
+            if (posX > window.innerWidth + 60) {
+                clearInterval(anim);
+                p.remove();
+            }
+        }, 16);
+
+        p.onclick = (e) => {
+            clearInterval(anim);
+            let nagroda = Math.floor(mocKlikniecia * 25 + 50);
+            punkty += nagroda;
+            tworzLatajacyTekst(e, `🎁 NIESPODZIANKA! +${nagroda}`, true);
+            zagrajdzwiek(1200, 'triangle', 0.3);
+            odblokujBadge('badge-6');
+            p.remove();
+            aktualizujWidok();
+        };
+    }
+
+    setInterval(() => {
+        if (Math.random() < 0.4) spawnowajPrezent();
+    }, 20000);
+
+    // --- Koło Fortuny Canvas ---
+    const wCanvas = document.getElementById('wheel-canvas');
+    const wCtx = wCanvas.getContext('2d');
+    const nagrody = ['100 Pkt', '0 Pkt', '500 Pkt', '2x Klik', '50 Pkt', 'JACKPOT!'];
+    const koloryKola = ['#ff4081', '#7c4dff', '#00e676', '#ffeb3b', '#ff9100', '#00e5ff'];
+
+    function rysujKolo() {
+        let kat = (Math.PI * 2) / nagrody.length;
+        for (let i = 0; i < nagrody.length; i++) {
+            wCtx.beginPath();
+            wCtx.fillStyle = koloryKola[i];
+            wCtx.moveTo(90, 90);
+            wCtx.arc(90, 90, 90, i * kat, (i + 1) * kat);
+            wCtx.fill();
+            wCtx.stroke();
+
+            wCtx.save();
+            wCtx.translate(90, 90);
+            wCtx.rotate(i * kat + kat / 2);
+            wCtx.fillStyle = '#000';
+            wCtx.font = 'bold 12px sans-serif';
+            wCtx.fillText(nagrody[i], 35, 4);
+            wCtx.restore();
+        }
+    }
+    rysujKolo();
+
+    let czyKreci = false;
+    function zakrecKolem() {
+        if (czyKreci || punkty < 1000) return;
+        punkty -= 1000;
+        czyKreci = true;
+        document.getElementById('wheel-btn').disabled = true;
+
+        let stopAngle = Math.floor(Math.random() * 360) + 1440;
+        wCanvas.style.transform = `rotate(${stopAngle}deg)`;
+
+        setTimeout(() => {
+            czyKreci = false;
+            let wygrana = Math.floor(Math.random() * 300) + 200;
+            punkty += wygrana;
+            alert(`🎉 Wygrałeś bonusowe ${wygrana} punktów!`);
+            wCanvas.style.transition = 'none';
+            wCanvas.style.transform = 'rotate(0deg)';
+            setTimeout(() => wCanvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99)', 50);
+            aktualizujWidok();
+        }, 4000);
+    }
+
+    // --- Autoklikacz Loop ---
     setInterval(() => {
         if (autoKlikatory > 0) {
-            punkty += autoKlikatory;
+            punkty += autoKlikatory * predkoscPetli;
             sprawdzOsiagniecia();
             aktualizujWidok();
         }
     }, 1000);
 
-    // Losowy Prezent
-    setInterval(() => {
-        if (Math.random() < 0.5) stworzPrezent();
-    }, 15000);
-
-    function stworzPrezent() {
-        const p = document.createElement('div');
-        p.className = 'bonus-present';
-        p.innerText = '🎁';
-        p.style.top = (Math.random() * 70 + 15) + 'vh';
-        p.style.left = (Math.random() * 80 + 10) + 'vw';
-        
-        p.onclick = (e) => {
-            let bonus = Math.floor(50 + Math.random() * 150 * mocKlikniecia);
-            punkty += bonus;
-            tworzLatajacyTekst(e, `🎁 PREZENT! +${bonus}`, true);
-            zagrajdzwiek(1200, 'sine', 0.3);
-            p.remove();
-            aktualizujWidok();
-        };
-
-        document.body.appendChild(p);
-        setTimeout(() => { if (p.parentNode) p.remove(); }, 6000);
-    }
-
+    // --- System Osiągnięć ---
     function sprawdzOsiagniecia() {
         if (punkty >= 10) odblokujBadge('badge-1');
         if (punkty >= 100) odblokujBadge('badge-2');
@@ -1136,48 +1137,46 @@
     }
 
     function odblokujBadge(id) {
-        const el = document.getElementById(id);
-        if (el && !el.classList.contains('unlocked')) {
-            el.classList.add('unlocked');
-            przeliczOsiagniecia();
+        let b = document.getElementById(id);
+        if (b && !b.classList.contains('unlocked')) {
+            b.classList.add('unlocked');
+            aktualizujProcentyOsiagniec();
         }
     }
 
-    function przeliczOsiagniecia() {
-        const unl = document.querySelectorAll('.badge.unlocked').length;
-        const total = document.querySelectorAll('.badge').length;
-        document.getElementById('ach-percent').innerText = Math.round((unl / total) * 100);
+    function aktualizujProcentyOsiagniec() {
+        let all = document.querySelectorAll('.badge').length;
+        let unlocked = document.querySelectorAll('.badge.unlocked').length;
+        document.getElementById('ach-percent').innerText = Math.round((unlocked / all) * 100);
     }
 
+    // --- Aktualizacja UI i Zapis ---
     function aktualizujWidok() {
         document.getElementById('click-count').innerText = `Punkty: ${Math.floor(punkty)}`;
-        document.getElementById('stats-info').innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
+        document.getElementById('stats-info').innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory * predkoscPetli} | Krytyk: 15% (x${mnoznikCrit})`;
+        
         document.getElementById('cost-upgrade').innerText = `Koszt: ${kosztUlepszenia} pkt`;
         document.getElementById('cost-auto').innerText = `Koszt: ${kosztAutoKlikacza} pkt`;
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
+        document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli} pkt`;
 
-        const wheelBtn = document.getElementById('wheel-btn');
-        wheelBtn.disabled = punkty < 1000 || isSpinning;
+        document.getElementById('wheel-btn').disabled = punkty < 1000 || czyKreci;
 
-        // Skórki
+        // Aktualizacja wyglądu skórek
         Object.keys(skorkiDef).forEach(icon => {
-            const btn = document.getElementById(`skin-${icon}`);
+            let btn = document.getElementById(`skin-${icon}`);
             if (btn) {
-                if (jestSkorkaOdblokowana(icon)) {
-                    btn.classList.remove('locked');
-                } else {
-                    btn.classList.add('locked');
-                }
-                
                 if (aktywneIcon === icon) {
-                    btn.classList.add('active');
+                    btn.className = 'skin-btn active';
+                } else if (jestSkorkaOdblokowana(icon)) {
+                    btn.className = 'skin-btn';
                 } else {
-                    btn.classList.remove('active');
+                    btn.className = 'skin-btn locked';
                 }
             }
         });
 
-        // Zapis do LocalStorage
+        // Zapis stanu
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
         localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
@@ -1185,31 +1184,21 @@
         localStorage.setItem('miloszka_koszt_auto', kosztAutoKlikacza);
         localStorage.setItem('miloszka_crit_mult', mnoznikCrit);
         localStorage.setItem('miloszka_koszt_crit', kosztCrit);
+        localStorage.setItem('miloszka_time_speed', predkoscPetli);
+        localStorage.setItem('miloszka_koszt_time', kosztPetli);
     }
 
     function resetujGre() {
-        if (confirm("Czy na pewno chcesz zresetować cały postęp gry?")) {
+        if (confirm("Czy na pewno chcesz zresetować cały swój postęp?")) {
             localStorage.clear();
-            punkty = 0;
-            mocKlikniecia = 1;
-            kosztUlepszenia = 10;
-            autoKlikatory = 0;
-            kosztAutoKlikacza = 50;
-            mnoznikCrit = 5;
-            kosztCrit = 100;
-            aktywneIcon = '⚽';
-            zarobioneZFizyki = 0;
-            
-            document.querySelectorAll('.badge').forEach(b => b.classList.remove('unlocked'));
-            aktualizujSkorkeGlownejKuli();
-            aktualizujWidok();
-            document.getElementById('physics-earnings').innerText = '0';
+            location.reload();
         }
     }
 
-    // Inicjalizacja widoku
-    przeliczOsiagniecia();
+    // Startowa inicjalizacja
+    aktualizujSkorkeGlownejKuli();
     aktualizujWidok();
+    sprawdzOsiagniecia();
 </script>
 </body>
 </html>
