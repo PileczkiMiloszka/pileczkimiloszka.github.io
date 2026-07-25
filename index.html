@@ -109,71 +109,6 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        /* Sekcja Fizyki / Sandbox */
-        .sandbox-zone {
-            background: rgba(0, 0, 0, 0.45);
-            max-width: 700px;
-            margin: 30px auto;
-            padding: 20px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-            backdrop-filter: blur(8px);
-        }
-
-        #physics-canvas {
-            background: #111827;
-            border-radius: 16px;
-            border: 3px solid rgba(255,255,255,0.2);
-            cursor: crosshair;
-            width: 100%;
-            max-width: 650px;
-            height: 350px;
-            display: block;
-            margin: 15px auto;
-            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
-        }
-
-        .controls-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            flex-wrap: wrap;
-            margin-top: 15px;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.9em;
-            font-weight: bold;
-        }
-
-        .control-group input[type=range] {
-            cursor: pointer;
-        }
-
-        .action-btn {
-            background: linear-gradient(135deg, #00c6ff, #0072ff);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.1s, background 0.2s;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-        }
-
-        .action-btn.danger {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-        }
-
         /* Główny panel gry */
         .game-zone {
             background: rgba(0, 0, 0, 0.4);
@@ -420,6 +355,71 @@
             box-shadow: 0 0 10px gold;
         }
 
+        /* Sekcja Fizyki / Sandbox */
+        .sandbox-zone {
+            background: rgba(0, 0, 0, 0.45);
+            max-width: 700px;
+            margin: 30px auto;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            backdrop-filter: blur(8px);
+        }
+
+        #physics-canvas {
+            background: #111827;
+            border-radius: 16px;
+            border: 3px solid rgba(255,255,255,0.2);
+            cursor: crosshair;
+            width: 100%;
+            max-width: 650px;
+            height: 350px;
+            display: block;
+            margin: 15px auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .control-group input[type=range] {
+            cursor: pointer;
+        }
+
+        .action-btn {
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .action-btn.danger {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+
         .bonus-present {
             position: fixed;
             font-size: 42px;
@@ -498,9 +498,9 @@
 
 <nav>
     <a href="#">Strona Główna</a>
-    <a href="#fizyka">Plac Fizyki</a>
     <a href="#gra">Gra Klikacz</a>
     <a href="#osiagniecia">Osiągnięcia</a>
+    <a href="#fizyka">Plac Fizyki</a>
 </nav>
 
 <header>
@@ -514,28 +514,7 @@
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
 </section>
 
-<div class="sandbox-zone" id="fizyka">
-    <h2>🧪 Plac Zabaw Fizyki Piłeczek</h2>
-    <p style="font-size: 0.9em; margin-bottom: 5px;">Klikaj na pole poniżej, aby stwarzać odbijające się piłeczki!</p>
-    <canvas id="physics-canvas" width="650" height="350"></canvas>
-    
-    <div class="controls-row">
-        <div class="control-group">
-            <label for="grav-slider">Grawitacja: <span id="grav-val">0.3</span></label>
-            <input type="range" id="grav-slider" min="0" max="1" step="0.05" value="0.3">
-        </div>
-        <div class="control-group">
-            <label for="bounce-slider">Odbicie: <span id="bounce-val">0.8</span></label>
-            <input type="range" id="bounce-slider" min="0.2" max="1" step="0.05" value="0.8">
-        </div>
-        <button class="action-btn" onclick="stworzDeszczPilek()">🌧️ Deszcz Piłek (x20)</button>
-        <button class="action-btn danger" onclick="wyczyscKolo()">🧹 Wyczyść Screen</button>
-    </div>
-    <div style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">
-        Liczba piłeczek na ekranie: <b id="ball-count">0</b>
-    </div>
-</div>
-
+<!-- GRA KLIKACZ (TERAZ NA GÓRZE) -->
 <div class="game-zone" id="gra">
     <h2>🎮 Klikacz Piłeczek</h2>
     <div id="click-count">Punkty: 0</div>
@@ -598,6 +577,29 @@
     </div>
 
     <button class="reset-btn" onclick="resetujGre()">🔄 Zresetuj postęp gry</button>
+</div>
+
+<!-- PLAC ZABAW FIZYKI (TERAZ NA SAMYM DOLE) -->
+<div class="sandbox-zone" id="fizyka">
+    <h2>🧪 Plac Zabaw Fizyki Piłeczek</h2>
+    <p style="font-size: 0.9em; margin-bottom: 5px;">Klikaj na pole poniżej, aby stwarzać odbijające się piłeczki!</p>
+    <canvas id="physics-canvas" width="650" height="350"></canvas>
+    
+    <div class="controls-row">
+        <div class="control-group">
+            <label for="grav-slider">Grawitacja: <span id="grav-val">0.3</span></label>
+            <input type="range" id="grav-slider" min="0" max="1" step="0.05" value="0.3">
+        </div>
+        <div class="control-group">
+            <label for="bounce-slider">Odbicie: <span id="bounce-val">0.8</span></label>
+            <input type="range" id="bounce-slider" min="0.2" max="1" step="0.05" value="0.8">
+        </div>
+        <button class="action-btn" onclick="stworzDeszczPilek()">🌧️ Deszcz Piłek (x20)</button>
+        <button class="action-btn danger" onclick="wyczyscKolo()">🧹 Wyczyść Screen</button>
+    </div>
+    <div style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">
+        Liczba piłeczek na ekranie: <b id="ball-count">0</b>
+    </div>
 </div>
 
 <footer>
@@ -834,6 +836,7 @@
             if (frenzyProgress >= 100) {
                 aktywujZlotySzal();
             }
+            document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
         }
 
         tworzCzasteczkiEmoji(event, aktywneIcon);
@@ -1013,32 +1016,57 @@
         const bonus = document.createElement('div');
         bonus.className = 'bonus-present';
         bonus.innerText = '🎁';
-        bonus.style.left = Math.random() * (window.innerWidth - 70) + 'px';
-        bonus.style.top = Math.random() * (window.innerHeight - 70) + 'px';
+        bonus.style.left = (Math.random() * 80 + 10) + 'vw';
+        bonus.style.top = (Math.random() * 80 + 10) + 'vh';
 
         bonus.onclick = () => {
-            let nagroda = Math.max(30, mocKlikniecia * 15);
+            const nagroda = (mocKlikniecia * 20) + Math.floor(Math.random() * 50);
             punkty += nagroda;
-            zagrajdzwiek(1200, 'sine', 0.25);
-            alert(`🎉 Znalazłeś prezent! Otrzymujesz +${nagroda} punktów!`);
+            zagrajdzwiek(900, 'triangle', 0.2);
+            alert(`🎁 Znalazłeś prezent! Otrzymujesz +${nagroda} punktów!`);
             bonus.remove();
             aktualizujWidok();
         };
 
         document.body.appendChild(bonus);
-        setTimeout(() => { if (document.body.contains(bonus)) bonus.remove(); }, 6000);
+
+        setTimeout(() => {
+            if (document.body.contains(bonus)) {
+                bonus.remove();
+            }
+        }, 8000);
     }
 
-    function tworzCzasteczkiEmoji(event, emoji) {
+    function tworzLatajacyTekst(e, tekst, jestCrit) {
+        const el = document.createElement('div');
+        el.className = 'floating-text' + (jestCrit ? ' crit' : '');
+        el.innerText = tekst;
+
+        const x = e.clientX || window.innerWidth / 2;
+        const y = e.clientY || window.innerHeight / 2;
+
+        el.style.left = `${x - 20}px`;
+        el.style.top = `${y - 30}px`;
+
+        document.body.appendChild(el);
+
+        setTimeout(() => el.remove(), 800);
+    }
+
+    function tworzCzasteczkiEmoji(e, emoji) {
+        const x = e.clientX || window.innerWidth / 2;
+        const y = e.clientY || window.innerHeight / 2;
+
         for (let i = 0; i < 5; i++) {
             const p = document.createElement('div');
             p.className = 'particle-emoji';
             p.innerText = emoji;
-            p.style.left = (event.clientX + window.scrollX - 10) + 'px';
-            p.style.top = (event.clientY + window.scrollY - 10) + 'px';
-            
-            let dx = (Math.random() - 0.5) * 120 + 'px';
-            let dy = (Math.random() - 0.5) * 120 + 'px';
+            p.style.left = `${x}px`;
+            p.style.top = `${y}px`;
+
+            const dx = (Math.random() - 0.5) * 120 + 'px';
+            const dy = (Math.random() - 0.5) * 120 + 'px';
+
             p.style.setProperty('--dx', dx);
             p.style.setProperty('--dy', dy);
 
@@ -1052,50 +1080,29 @@
         if (punkty >= 100) odblokujBadge('badge-2');
         if (punkty >= 1000) odblokujBadge('badge-3');
         if (punkty >= 10000) odblokujBadge('badge-4');
-
-        let total = document.querySelectorAll('.badge').length;
-        let unlocked = document.querySelectorAll('.badge.unlocked').length;
-        document.getElementById('ach-percent').innerText = Math.round((unlocked / total) * 100);
     }
 
     function odblokujBadge(id) {
-        const badge = document.getElementById(id);
-        if (badge && !badge.classList.contains('unlocked')) {
-            badge.classList.add('unlocked');
+        const b = document.getElementById(id);
+        if (b && !b.classList.contains('unlocked')) {
+            b.classList.add('unlocked');
+            aktualizujProcentOsiagnieć();
         }
+    }
+
+    function aktualizujProcentOsiagnieć() {
+        const total = document.querySelectorAll('.badge').length;
+        const unlocked = document.querySelectorAll('.badge.unlocked').length;
+        const pct = Math.round((unlocked / total) * 100);
+        document.getElementById('ach-percent').innerText = pct;
     }
 
     function zmienKolor(element) {
-        const kolory = [
-            'radial-gradient(circle at top, #ffffff, #ff1493)',
-            'radial-gradient(circle at top, #ffffff, #00bfff)',
-            'radial-gradient(circle at top, #ffffff, #32cd32)',
-            'radial-gradient(circle at top, #ffffff, #ff8c00)',
-            'radial-gradient(circle at top, #ffffff, #9932cc)'
-        ];
-        element.style.background = kolory[Math.floor(Math.random() * kolory.length)];
-        zagrajdzwiek(500, 'sine', 0.05);
-    }
-
-    function tworzLatajacyTekst(event, tekst, isCrit) {
-        const el = document.createElement('div');
-        el.className = 'floating-text' + (isCrit ? ' crit' : '');
-        el.innerText = tekst;
-        el.style.left = (event.clientX + window.scrollX - 15) + 'px';
-        el.style.top = (event.clientY + window.scrollY - 25) + 'px';
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 800);
-    }
-
-    function resetujGre() {
-        if (confirm("Czy na pewno chcesz zresetować cały swój postęp?")) {
-            localStorage.clear();
-            location.reload();
-        }
+        element.style.background = `radial-gradient(circle at top, #ffffff, hsl(${Math.random() * 360}, 100%, 65%))`;
+        zagrajdzwiek(600, 'sine', 0.05);
     }
 
     function aktualizujWidok() {
-        // Zapisywanie do LocalStorage
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
         localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
@@ -1104,41 +1111,41 @@
         localStorage.setItem('miloszka_crit_mult', mnoznikCrit);
         localStorage.setItem('miloszka_koszt_crit', kosztCrit);
 
-        document.getElementById("click-count").innerText = "Punkty: " + punkty;
-        document.getElementById("stats-info").innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
-        
-        document.getElementById("cost-upgrade").innerText = `Koszt: ${kosztUlepszenia} pkt`;
-        document.getElementById("cost-auto").innerText = `Koszt: ${kosztAutoKlikacza} pkt`;
-        document.getElementById("cost-crit").innerText = `Koszt: ${kosztCrit} pkt`;
+        document.getElementById('click-count').innerText = `Punkty: ${punkty}`;
+        document.getElementById('stats-info').innerText = `Moc: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory} | Krytyk: 15% (x${mnoznikCrit})`;
 
-        if (!isFrenzyActive) {
-            document.getElementById('frenzy-bar').style.width = frenzyProgress + '%';
+        document.getElementById('cost-upgrade').innerText = `Koszt: ${kosztUlepszenia} pkt`;
+        document.getElementById('cost-auto').innerText = `Koszt: ${kosztAutoKlikacza} pkt`;
+        document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
+
+        const wheelBtn = document.getElementById('wheel-btn');
+        if (wheelBtn) {
+            wheelBtn.disabled = isSpinning || punkty < 1000;
         }
 
         Object.keys(skorkiDef).forEach(icon => {
             const btn = document.getElementById(`skin-${icon}`);
             if (btn) {
-                const koszt = skorkiDef[icon];
                 if (aktywneIcon === icon) {
                     btn.className = 'skin-btn active';
-                } else if (punkty >= koszt) {
+                } else if (jestSkorkaOdblokowana(icon)) {
                     btn.className = 'skin-btn';
                 } else {
                     btn.className = 'skin-btn locked';
                 }
             }
         });
+    }
 
-        const wheelBtn = document.getElementById('wheel-btn');
-        if (punkty >= 1000 && !isSpinning) {
-            wheelBtn.disabled = false;
-            wheelBtn.innerText = "Zakręć Kołem (Koszt: 1000 pkt)";
-        } else {
-            wheelBtn.disabled = true;
-            wheelBtn.innerText = isSpinning ? "Trwa losowanie..." : `Zakręć Kołem (Wymagane: 1000 pkt)`;
+    function resetujGre() {
+        if (confirm("Czy na pewno chcesz zresetować cały postęp gry?")) {
+            localStorage.clear();
+            location.reload();
         }
     }
 
+    // Pierwsze uruchomienie
+    sprawdzOsiagniecia();
     aktualizujWidok();
 </script>
 </body>
