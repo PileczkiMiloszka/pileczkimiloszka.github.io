@@ -266,7 +266,6 @@
             transform: scale(0.98);
         }
 
-        /* KOŁO FORTUNY - POD ULEPSZENIAMI + EFEKTY DELIKATNE */
         .wheel-box {
             background: rgba(255,255,255,0.12);
             padding: 18px;
@@ -465,13 +464,17 @@
             animation: pulsePresent 0.5s infinite alternate;
         }
 
+        .flying-present.golden {
+            filter: drop-shadow(0 0 15px gold) drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+        }
+
         @keyframes pulsePresent {
             from { transform: scale(1); }
             to { transform: scale(1.15); }
         }
 
         .floating-text {
-            position: absolute;
+            position: fixed;
             font-weight: 900;
             font-size: 26px;
             color: gold;
@@ -493,11 +496,11 @@
         }
 
         .particle-emoji {
-            position: absolute;
+            position: fixed;
             pointer-events: none;
             font-size: 20px;
             animation: particleFade 0.7s ease-out forwards;
-            z-index: 90;
+            z-index: 9998;
         }
 
         @keyframes particleFade {
@@ -592,7 +595,7 @@
         </button>
     </div>
 
-    <!-- KOŁO FORTUNY (POD SKLEPEM + DELIKATNY WYGLĄD) -->
+    <!-- KOŁO FORTUNY -->
     <div class="wheel-box">
         <div style="font-weight: bold; margin-bottom: 4px; font-size: 1.05em;">🎡 Słodkie Koło Fortuny</div>
         <div class="wheel-canvas-container">
@@ -604,7 +607,7 @@
         </button>
     </div>
 
-    <!-- SEKCJA PRESTIŻU (CENA ROŚNIE 2X ZA KAŻDYM RAZEM) -->
+    <!-- SEKCJA PRESTIŻU -->
     <div class="prestige-box">
         <div style="font-weight: bold; font-size: 1.1em; color: #fff;">🌟 Narodziny Gwiazdy (Prestiż)</div>
         <p style="font-size: 0.85em; margin: 6px 0;">Zresetuj postęp ulepszeń, aby zdobyć Gwiazdy Prestiżu! Każda daje +50% do WSZYSTKICH zdobywanych punktów!</p>
@@ -677,8 +680,8 @@
         el.className = 'floating-text' + (jestCrit ? ' crit' : '');
         el.innerText = txt;
         
-        let x = event ? event.clientX : window.innerWidth / 2;
-        let y = event ? event.clientY : window.innerHeight / 2;
+        let x = event ? (event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : window.innerWidth / 2)) : window.innerWidth / 2;
+        let y = event ? (event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : window.innerHeight / 2)) : window.innerHeight / 2;
         
         el.style.left = (x - 20) + 'px';
         el.style.top = (y - 30) + 'px';
@@ -688,13 +691,15 @@
     }
 
     function tworzCzasteczkiEmoji(event, emoji) {
-        if (!event) return;
+        let x = event ? (event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : window.innerWidth / 2)) : window.innerWidth / 2;
+        let y = event ? (event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : window.innerHeight / 2)) : window.innerHeight / 2;
+
         for (let i = 0; i < 6; i++) {
             const p = document.createElement('div');
             p.className = 'particle-emoji';
             p.innerText = emoji;
-            p.style.left = event.clientX + 'px';
-            p.style.top = event.clientY + 'px';
+            p.style.left = x + 'px';
+            p.style.top = y + 'px';
             
             const dx = (Math.random() - 0.5) * 120 + 'px';
             const dy = (Math.random() - 0.5) * 120 + 'px';
@@ -1076,7 +1081,6 @@
         }
     }
 
-    // PRESTIŻ - CENA MNOŻY SIĘ X2 ZA KAŻDYM RAZEM (25k, 50k, 100k, ...)
     function wykonajPrestiz() {
         if (punkty >= kosztPrestizu) {
             if (confirm(`Czy chcesz dokonać Prestiżu za ${kosztPrestizu.toLocaleString()} pkt? Resetujesz ulepszenia, ale zyskujesz stały bonus +50% do wszystkich punktów!`)) {
@@ -1091,7 +1095,6 @@
                 predkoscPetli = 1;
                 kosztPetli = 300;
                 
-                // Mnożenie ceny prestiżu razy 2
                 kosztPrestizu *= 2;
 
                 localStorage.setItem('miloszka_prestiz', prestizLvl);
@@ -1102,21 +1105,23 @@
         }
     }
 
-    // LATAJĄCY PREZENT - NAPIS WYŚWIETLA SIĘ BEZPOŚREDNIO PRZY PREZENCIE!
+    // LATAJĄCY PREZENT - NAPIS I EFEKTY POKAZUJĄ SIĘ BEZPOŚREDNIO W MIEJSCU KLIKNIĘCIA!
     function spawnowajPrezent() {
         const p = document.createElement('div');
-        p.className = 'flying-present';
-        p.innerText = '🎁';
+        let czyZloty = Math.random() < 0.2; // 20% szans na rzadki złoty prezent!
+        
+        p.className = 'flying-present' + (czyZloty ? ' golden' : '');
+        p.innerText = czyZloty ? '👑🎁' : '🎁';
         p.style.top = Math.random() * (window.innerHeight - 120) + 'px';
-        p.style.left = '-60px';
+        p.style.left = '-70px';
 
         document.body.appendChild(p);
 
-        let posX = -60;
+        let posX = -70;
         let anim = setInterval(() => {
             posX += 3;
             p.style.left = posX + 'px';
-            if (posX > window.innerWidth + 60) {
+            if (posX > window.innerWidth + 70) {
                 clearInterval(anim);
                 p.remove();
             }
@@ -1124,12 +1129,17 @@
 
         p.onclick = (e) => {
             clearInterval(anim);
-            let nagroda = Math.floor((mocKlikniecia * 25 + 50) * pobierzMnoznikPrestizu());
+            
+            // Obliczanie nagrody (złoty daje x3 więcej)
+            let mnoznikZlotego = czyZloty ? 3 : 1;
+            let nagroda = Math.floor((mocKlikniecia * 25 + 50) * pobierzMnoznikPrestizu() * mnoznikZlotego);
             punkty += nagroda;
             
-            // Napis punktowy dokładnie obok klikniętego prezentu
-            tworzLatajacyTekst(e, `+${nagroda} PKT!`, true);
-            zagrajdzwiek(1200, 'triangle', 0.3);
+            // Efekty bezpośrednio przy otwartym prezencie!
+            tworzLatajacyTekst(e, czyZloty ? `🌟 ZŁOTY PREZENT! +${nagroda} PKT!` : `+${nagroda} PKT!`, true);
+            tworzCzasteczkiEmoji(e, czyZloty ? '✨' : '🎁');
+
+            zagrajdzwiek(czyZloty ? 1500 : 1200, 'triangle', 0.35);
             odblokujBadge('badge-6');
             p.remove();
             aktualizujWidok();
@@ -1140,7 +1150,7 @@
         if (Math.random() < 0.4) spawnowajPrezent();
     }, 20000);
 
-    // KOŁO FORTUNY (DELIKATNY I CZYSTY GLAMOUR)
+    // KOŁO FORTUNY
     const wCanvas = document.getElementById('wheel-canvas');
     const wCtx = wCanvas.getContext('2d');
     
@@ -1267,7 +1277,6 @@
 
         document.getElementById('wheel-btn').disabled = punkty < 500 || czyKreci;
         
-        // Zmiana tekstu i dostępności prestiżu
         document.getElementById('prestige-btn').innerText = `Awanse za ${kosztPrestizu.toLocaleString()} pkt (+1 ⭐)`;
         document.getElementById('prestige-btn').disabled = punkty < kosztPrestizu;
 
