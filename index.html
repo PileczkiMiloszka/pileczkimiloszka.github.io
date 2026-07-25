@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>pilkimiloszka</title>
+    <title>Słodkie Piłeczki Miłoszka - Clicker</title>
     <link rel="icon" type="image/png" href="obraz_2026-07-23_220237283.png">
     <style>
         body {
@@ -13,9 +13,10 @@
             color: white;
             text-align: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
-        /* Pasek nawigacyjny */
+        /* Menu nawigacji */
         nav {
             background: rgba(0, 0, 0, 0.4);
             padding: 12px;
@@ -37,29 +38,26 @@
 
         header {
             background: rgba(0,0,0,0.25);
-            padding: 30px;
+            padding: 25px;
         }
 
         h1 {
-            font-size: 3em;
+            font-size: 2.8em;
             margin: 0;
         }
 
-        p {
-            font-size: 1.2em;
-        }
-
+        /* Piłeczki dekoracyjne */
         .balls {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 25px;
             flex-wrap: wrap;
-            margin: 40px 20px;
+            margin: 30px 20px;
         }
 
         .ball {
-            width: 180px;
-            height: 180px;
+            width: 140px;
+            height: 140px;
             background: radial-gradient(circle at top, #ffffff, #ff69b4);
             border-radius: 50%;
             display: flex;
@@ -67,7 +65,7 @@
             justify-content: center;
             font-weight: bold;
             color: white;
-            padding: 15px;
+            padding: 10px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.3);
             transition: transform 0.3s, background 0.3s;
             cursor: pointer;
@@ -82,41 +80,85 @@
             transform: scale(0.95);
         }
 
-        /* Sekcja z przyciskiem i licznikiem */
-        .interactive-zone {
-            margin: 30px 0;
-        }
-
-        button {
-            padding: 12px 25px;
-            font-size: 18px;
-            border: none;
-            border-radius: 10px;
-            background: gold;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            transition: background 0.2s, transform 0.1s;
-        }
-
-        button:hover {
-            background: orange;
-        }
-
-        button:active {
-            transform: scale(0.95);
+        /* Główny panel gry */
+        .game-zone {
+            background: rgba(0, 0, 0, 0.3);
+            max-width: 450px;
+            margin: 0 auto 30px auto;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            position: relative;
         }
 
         #click-count {
-            font-size: 1.4em;
+            font-size: 2em;
             font-weight: bold;
-            margin-top: 15px;
+            margin: 10px 0;
             color: #fff;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
+        }
+
+        .main-btn {
+            padding: 15px 35px;
+            font-size: 22px;
+            border: none;
+            border-radius: 15px;
+            background: gold;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .main-btn:hover {
+            background: orange;
+        }
+
+        .main-btn:active {
+            transform: scale(0.92);
+        }
+
+        /* Sklepik */
+        .shop {
+            margin-top: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .shop-btn {
+            padding: 10px 15px;
+            font-size: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #00e676;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .shop-btn:hover {
+            background: #00c853;
+        }
+
+        /* Animacja latających cyferek */
+        .floating-text {
+            position: absolute;
+            font-weight: bold;
+            font-size: 20px;
+            color: gold;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-50px); }
         }
 
         footer {
-            margin-top: 40px;
             padding: 20px;
             background: rgba(0,0,0,0.25);
         }
@@ -124,11 +166,10 @@
 </head>
 <body>
 
-<!-- Nowość: Menu górne -->
 <nav>
     <a href="#">Strona Główna</a>
     <a href="#pilki">Piłeczki</a>
-    <a href="#licznik">Licznik</a>
+    <a href="#gra">Gra Klikacz</a>
 </nav>
 
 <header>
@@ -136,50 +177,121 @@
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
 </header>
 
-<!-- Klikalne piłeczki -->
+<!-- Klikalne piłeczki dekoracyjne -->
 <section class="balls" id="pilki">
-    <div class="ball" onclick="zmienKolor(this)">
-        Kliknij mnie! 🍓
-    </div>
-
-    <div class="ball" onclick="zmienKolor(this)">
-        Słodkie Piłeczki Miłoszka ⚽
-    </div>
-
-    <div class="ball" onclick="zmienKolor(this)">
-        Kliknij mnie! 🍬
-    </div>
+    <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍓</div>
+    <div class="ball" onclick="zmienKolor(this)">Słodkie Piłeczki Miłoszka ⚽</div>
+    <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
 </section>
 
-<!-- Nowość: Interaktywny przycisk z licznikiem -->
-<div class="interactive-zone" id="licznik">
-    <button onclick="dodajPunkt()">Kliknij mnie!</button>
-    <div id="click-count">Liczba kliknięć: 0</div>
+<!-- Panel Gry -->
+<div class="game-zone" id="gra">
+    <h2>🎮 Klikacz Piłeczek</h2>
+    <div id="click-count">Punkty: 0</div>
+    <p id="stats-info">Moc kliknięcia: 1 | Autoklik/s: 0</p>
+    
+    <button class="main-btn" onclick="dodajPunkt(event)">KLIKAJ! 🎉</button>
+
+    <div class="shop">
+        <h3>🛒 Sklep z ulepszeniami</h3>
+        <button class="shop-btn" id="btn-upgrade" onclick="kupUlepszenie()">
+            Mocniejszy Klik (+1/klik) - Koszt: 10 pkt
+        </button>
+        <button class="shop-btn" id="btn-autoclicker" onclick="kupAutoKlikacz()">
+            Autoklikacz (+1 pkt/sek) - Koszt: 50 pkt
+        </button>
+    </div>
 </div>
 
 <footer>
     © 2026 pilkimiloszka — Wszystkie prawa zastrzeżone.
 </footer>
 
-<!-- Skrypt JavaScript dodający interakcję -->
 <script>
-    let count = 0;
+    // Inicjalizacja zmiennych (próba wczytania z pamięci przeglądarki)
+    let punkty = parseInt(localStorage.getItem('miloszka_punkty')) || 0;
+    let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
+    let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
+    let autoKlikatory = parseInt(localStorage.getItem('miloszka_autoklik')) || 0;
+    let kosztAutoKlikacza = parseInt(localStorage.getItem('miloszka_koszt_auto')) || 50;
 
-    function dodajPunkt() {
-        count++;
-        document.getElementById("click-count").innerText = "Liczba kliknięć: " + count;
+    aktualizujWidok();
+
+    // Dodawanie punktu ręcznie
+    function dodajPunkt(event) {
+        punkty += mocKlikniecia;
+        tworzLatajacyTekst(event, `+${mocKlikniecia}`);
+        aktualizujWidok();
     }
 
-    // Funkcja zmieniająca losowo kolor piłeczki po kliknięciu
+    // Kupowanie mocy
+    function kupUlepszenie() {
+        if (punkty >= kosztUlepszenia) {
+            punkty -= kosztUlepszenia;
+            mocKlikniecia += 1;
+            kosztUlepszenia = Math.floor(kosztUlepszenia * 1.5);
+            aktualizujWidok();
+        } else {
+            alert("Brakuje Ci punktów!");
+        }
+    }
+
+    // Kupowanie autoklikacza
+    function kupAutoKlikacz() {
+        if (punkty >= kosztAutoKlikacza) {
+            punkty -= kosztAutoKlikacza;
+            autoKlikatory += 1;
+            kosztAutoKlikacza = Math.floor(kosztAutoKlikacza * 1.6);
+            aktualizujWidok();
+        } else {
+            alert("Brakuje Ci punktów!");
+        }
+    }
+
+    // Pętla dodająca punkty automatycznie co sekundę
+    setInterval(() => {
+        if (autoKlikatory > 0) {
+            punkty += autoKlikatory;
+            aktualizujWidok();
+        }
+    }, 1000);
+
+    // Zmiana kolorów piłeczek na górze
     function zmienKolor(element) {
         const kolory = [
             'radial-gradient(circle at top, #ffffff, #ff1493)',
             'radial-gradient(circle at top, #ffffff, #00bfff)',
             'radial-gradient(circle at top, #ffffff, #32cd32)',
-            'radial-gradient(circle at top, #ffffff, #ff8c00)'
+            'radial-gradient(circle at top, #ffffff, #ff8c00)',
+            'radial-gradient(circle at top, #ffffff, #9932cc)'
         ];
-        const losowyKolor = kolory[Math.floor(Math.random() * kolory.length)];
-        element.style.background = losowyKolor;
+        element.style.background = kolory[Math.floor(Math.random() * kolory.length)];
+    }
+
+    // Efekt wizualny przy klikaniu
+    function tworzLatajacyTekst(event, tekst) {
+        const el = document.createElement('div');
+        el.className = 'floating-text';
+        el.innerText = tekst;
+        el.style.left = (event.clientX - 10) + 'px';
+        el.style.top = (event.clientY - 20) + 'px';
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 800);
+    }
+
+    // Odświeżanie interfejsu i zapisywanie gry
+    function aktualizujWidok() {
+        document.getElementById("click-count").innerText = "Punkty: " + punkty;
+        document.getElementById("stats-info").innerText = `Moc kliknięcia: ${mocKlikniecia} | Autoklik/s: ${autoKlikatory}`;
+        document.getElementById("btn-upgrade").innerText = `Mocniejszy Klik (+1/klik) - Koszt: ${kosztUlepszenia} pkt`;
+        document.getElementById("btn-autoclicker").innerText = `Autoklikacz (+1 pkt/s) - Koszt: ${kosztAutoKlikacza} pkt`;
+
+        // Zapis do LocalStorage
+        localStorage.setItem('miloszka_punkty', punkty);
+        localStorage.setItem('miloszka_moc', mocKlikniecia);
+        localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
+        localStorage.setItem('miloszka_autoklik', autoKlikatory);
+        localStorage.setItem('miloszka_koszt_auto', kosztAutoKlikacza);
     }
 </script>
 
