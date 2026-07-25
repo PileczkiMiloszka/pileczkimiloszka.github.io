@@ -21,7 +21,6 @@
             transition: background 0.5s;
         }
 
-        /* Shake effect */
         .shake {
             animation: shakeAnim 0.2s ease-in-out;
         }
@@ -34,7 +33,6 @@
             100% { transform: translate(0, 0); }
         }
 
-        /* Pasek Złotego Szału */
         body.golden-frenzy {
             background: linear-gradient(135deg, #ffe066, #ff8c00) !important;
             animation: frenzyPulse 0.8s infinite alternate;
@@ -109,7 +107,6 @@
             transform: scale(1.1) rotate(5deg);
         }
 
-        /* Główny panel gry */
         .game-zone {
             background: rgba(0, 0, 0, 0.4);
             max-width: 520px;
@@ -143,7 +140,6 @@
             min-height: 24px;
         }
 
-        /* Wielka centralna ikona do klikania */
         .clicker-target {
             width: 160px;
             height: 160px;
@@ -170,7 +166,6 @@
             transform: scale(0.90) rotate(-3deg);
         }
 
-        /* Pasek Ładowania Złotego Szału */
         .frenzy-bar-container {
             width: 100%;
             height: 18px;
@@ -188,7 +183,6 @@
             transition: width 0.1s linear;
         }
 
-        /* Sekcja Skórek */
         .skins-box {
             background: rgba(255,255,255,0.1);
             padding: 12px;
@@ -240,7 +234,6 @@
             filter: grayscale(0.8);
         }
 
-        /* Sklepik */
         .shop {
             margin-top: 20px;
             display: flex;
@@ -273,40 +266,43 @@
             transform: scale(0.98);
         }
 
-        /* Wizualne Koło Fortuny */
+        /* KOŁO FORTUNY - POD ULEPSZENIAMI + EFEKTY DELIKATNE */
         .wheel-box {
             background: rgba(255,255,255,0.12);
-            padding: 15px;
-            border-radius: 16px;
-            margin: 20px 0;
+            padding: 18px;
+            border-radius: 20px;
+            margin: 25px 0 15px 0;
             display: flex;
             flex-direction: column;
             align-items: center;
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.15), 0 8px 20px rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .wheel-canvas-container {
             position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 10px 0;
+            width: 190px;
+            height: 190px;
+            margin: 12px 0;
         }
 
         .wheel-pointer {
             position: absolute;
-            top: -10px;
+            top: -12px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-top: 18px solid #ff2a6d;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 22px solid #ff2a6d;
             z-index: 10;
+            filter: drop-shadow(0 3px 4px rgba(0,0,0,0.5));
         }
 
         #wheel-canvas {
             border-radius: 50%;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 8px rgba(0,0,0,0.3);
             transition: transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99);
         }
 
@@ -320,7 +316,12 @@
             font-weight: bold;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.1s, opacity 0.2s;
+            transition: transform 0.1s, opacity 0.2s, background 0.2s;
+        }
+
+        .wheel-btn:hover:not(:disabled) {
+            transform: scale(1.04);
+            filter: brightness(1.1);
         }
 
         .wheel-btn:disabled {
@@ -329,7 +330,6 @@
             opacity: 0.5;
         }
 
-        /* Sekcja Prestiżu */
         .prestige-box {
             background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 140, 0, 0.3));
             border: 2px dashed gold;
@@ -357,7 +357,6 @@
             opacity: 0.6;
         }
 
-        /* Sekcja Osiągnięć */
         .achievements {
             background: rgba(0, 0, 0, 0.25);
             margin: 20px 0 10px 0;
@@ -390,7 +389,6 @@
             box-shadow: 0 0 10px gold;
         }
 
-        /* Sekcja Fizyki / Sandbox */
         .sandbox-zone {
             background: rgba(0, 0, 0, 0.45);
             max-width: 700px;
@@ -455,7 +453,7 @@
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
         }
 
-        /* Latający bonusowy prezent */
+        /* LATAJĄCY PREZENT */
         .flying-present {
             position: fixed;
             font-size: 45px;
@@ -472,7 +470,6 @@
             to { transform: scale(1.15); }
         }
 
-        /* Animowane napisy po kliknięciu */
         .floating-text {
             position: absolute;
             font-weight: 900;
@@ -481,7 +478,7 @@
             pointer-events: none;
             animation: floatUp 0.8s ease-out forwards;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
-            z-index: 100;
+            z-index: 10000;
         }
 
         .floating-text.crit {
@@ -495,7 +492,6 @@
             100% { opacity: 0; transform: translateY(-70px) scale(1.3); }
         }
 
-        /* Cząsteczki / Emoji z piłki */
         .particle-emoji {
             position: absolute;
             pointer-events: none;
@@ -579,6 +575,7 @@
         </div>
     </div>
 
+    <!-- SKLEP Z ULEPSZENIAMI -->
     <div class="shop">
         <h3>🛒 Sklep z ulepszeniami</h3>
         <button class="shop-btn" id="btn-upgrade" onclick="kupUlepszenie()">
@@ -595,22 +592,22 @@
         </button>
     </div>
 
-    <!-- ULEPSZONE KOŁO FORTUNY (POD UPGRADAMI) -->
+    <!-- KOŁO FORTUNY (POD SKLEPEM + DELIKATNY WYGLĄD) -->
     <div class="wheel-box">
-        <div style="font-weight: bold; margin-bottom: 8px;">🎡 Słodkie Koło Fortuny (SUPER BUFF!)</div>
+        <div style="font-weight: bold; margin-bottom: 4px; font-size: 1.05em;">🎡 Słodkie Koło Fortuny</div>
         <div class="wheel-canvas-container">
             <div class="wheel-pointer"></div>
-            <canvas id="wheel-canvas" width="180" height="180"></canvas>
+            <canvas id="wheel-canvas" width="190" height="190"></canvas>
         </div>
         <button class="wheel-btn" id="wheel-btn" onclick="zakrecKolem()" disabled>
-            Zakręć (Tylko 500 pkt!)
+            Zakręć (500pkt)
         </button>
     </div>
 
-    <!-- DODANA NOWOŚĆ: SEKCJA PRESTIŻU -->
+    <!-- SEKCJA PRESTIŻU (CENA ROŚNIE 2X ZA KAŻDYM RAZEM) -->
     <div class="prestige-box">
         <div style="font-weight: bold; font-size: 1.1em; color: #fff;">🌟 Narodziny Gwiazdy (Prestiż)</div>
-        <p style="font-size: 0.85em; margin: 6px 0;">Zresetuj postęp gier (oprócz prestiżu), aby zdobyć Gwiazdy Prestiżu! Każda daje +50% do WSZYSTKICH zdobywanych punktów!</p>
+        <p style="font-size: 0.85em; margin: 6px 0;">Zresetuj postęp ulepszeń, aby zdobyć Gwiazdy Prestiżu! Każda daje +50% do WSZYSTKICH zdobywanych punktów!</p>
         <button class="prestige-btn" id="prestige-btn" onclick="wykonajPrestiz()" disabled>
             Awanse za 25,000 pkt (+1 ⭐)
         </button>
@@ -661,7 +658,6 @@
 </footer>
 
 <script>
-    // Globalny licznik zarobków z fizyki
     let zarobioneZFizyki = 0;
 
     function dodajPunktyZFizyki(ilosc, e = null, text = "") {
@@ -676,7 +672,6 @@
         aktualizujWidok();
     }
 
-    // --- Efekty Wizualne (Tekst i Cząsteczki) ---
     function tworzLatajacyTekst(event, txt, jestCrit = false) {
         const el = document.createElement('div');
         el.className = 'floating-text' + (jestCrit ? ' crit' : '');
@@ -717,9 +712,7 @@
         zagrajdzwiek(300 + Math.random() * 200, 'sine', 0.05);
     }
 
-    // ==========================================
-    // 🧪 SKRYPT SYMULATORA FIZYKI PIŁECZEK (CANVAS)
-    // ==========================================
+    // --- SYMULACJA FIZYKI ---
     const canvas = document.getElementById('physics-canvas');
     const ctx = canvas.getContext('2d');
     let physicsBalls = [];
@@ -901,9 +894,7 @@
     loopFizyki();
 
 
-    // ==========================================
-    // 🎮 SKRYPT KLIKACZA I GRY
-    // ==========================================
+    // --- KLIKACZ I GŁÓWNA LOGIKA ---
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
         if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -931,6 +922,7 @@
     let kosztPetli = parseInt(localStorage.getItem('miloszka_koszt_time')) || 300;
 
     let prestizLvl = parseInt(localStorage.getItem('miloszka_prestiz')) || 0;
+    let kosztPrestizu = parseInt(localStorage.getItem('miloszka_koszt_prestiz')) || 25000;
 
     let aktywneIcon = localStorage.getItem('miloszka_skin') || '⚽';
     let frenzyProgress = 0;
@@ -949,7 +941,7 @@
     };
 
     function pobierzMnoznikPrestizu() {
-        return 1 + (prestizLvl * 0.5); // +50% za każdy poziom prestiżu
+        return 1 + (prestizLvl * 0.5);
     }
 
     function dodajPunkt(event) {
@@ -1044,7 +1036,6 @@
         document.getElementById('clicker-emoji').innerText = aktywneIcon;
     }
 
-    // --- Kupowanie w Sklepie ---
     function kupUlepszenie() {
         if (punkty >= kosztUlepszenia) {
             punkty -= kosztUlepszenia;
@@ -1085,10 +1076,10 @@
         }
     }
 
-    // --- Prestiż ---
+    // PRESTIŻ - CENA MNOŻY SIĘ X2 ZA KAŻDYM RAZEM (25k, 50k, 100k, ...)
     function wykonajPrestiz() {
-        if (punkty >= 25000) {
-            if (confirm("Czy chcesz dokonać Prestiżu? Twoje punkty i ulepszenia zresetują się, ale zyskasz +50% do punktów na stałe!")) {
+        if (punkty >= kosztPrestizu) {
+            if (confirm(`Czy chcesz dokonać Prestiżu za ${kosztPrestizu.toLocaleString()} pkt? Resetujesz ulepszenia, ale zyskujesz stały bonus +50% do wszystkich punktów!`)) {
                 prestizLvl += 1;
                 punkty = 0;
                 mocKlikniecia = 1;
@@ -1099,19 +1090,24 @@
                 kosztCrit = 100;
                 predkoscPetli = 1;
                 kosztPetli = 300;
+                
+                // Mnożenie ceny prestiżu razy 2
+                kosztPrestizu *= 2;
+
                 localStorage.setItem('miloszka_prestiz', prestizLvl);
+                localStorage.setItem('miloszka_koszt_prestiz', kosztPrestizu);
                 zagrajdzwiek(1200, 'square', 0.5);
                 aktualizujWidok();
             }
         }
     }
 
-    // --- Flying Present ---
+    // LATAJĄCY PREZENT - NAPIS WYŚWIETLA SIĘ BEZPOŚREDNIO PRZY PREZENCIE!
     function spawnowajPrezent() {
         const p = document.createElement('div');
         p.className = 'flying-present';
         p.innerText = '🎁';
-        p.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        p.style.top = Math.random() * (window.innerHeight - 120) + 'px';
         p.style.left = '-60px';
 
         document.body.appendChild(p);
@@ -1130,7 +1126,9 @@
             clearInterval(anim);
             let nagroda = Math.floor((mocKlikniecia * 25 + 50) * pobierzMnoznikPrestizu());
             punkty += nagroda;
-            tworzLatajacyTekst(e, `🎁 NIESPODZIANKA! +${nagroda}`, true);
+            
+            // Napis punktowy dokładnie obok klikniętego prezentu
+            tworzLatajacyTekst(e, `+${nagroda} PKT!`, true);
             zagrajdzwiek(1200, 'triangle', 0.3);
             odblokujBadge('badge-6');
             p.remove();
@@ -1142,40 +1140,42 @@
         if (Math.random() < 0.4) spawnowajPrezent();
     }, 20000);
 
-    // --- ULEPSZONE KOŁO FORTUNY (REALNE LOSOWANIE) ---
+    // KOŁO FORTUNY (DELIKATNY I CZYSTY GLAMOUR)
     const wCanvas = document.getElementById('wheel-canvas');
     const wCtx = wCanvas.getContext('2d');
     
-    // Obiekty z nagrodami i opisem
     const nagrodyObj = [
         { label: '500 Pkt', type: 'pts', val: 500 },
         { label: '1000 Pkt', type: 'pts', val: 1000 },
         { label: 'Moc +5', type: 'moc', val: 5 },
         { label: '250 Pkt', type: 'pts', val: 250 },
         { label: 'Autoklik +3', type: 'auto', val: 3 },
-        { label: 'JACKPOT! 5000', type: 'pts', val: 5000 }
+        { label: 'JACKPOT!', type: 'pts', val: 5000 }
     ];
     
-    const koloryKola = ['#ff4081', '#7c4dff', '#00e676', '#ffeb3b', '#ff9100', '#00e5ff'];
-    let currentWheelRotation = 0;
+    const koloryKola = ['#ff5252', '#7c4dff', '#00e676', '#ffb300', '#ff6d00', '#00b0ff'];
 
     function rysujKolo() {
         let kat = (Math.PI * 2) / nagrodyObj.length;
-        wCtx.clearRect(0,0,180,180);
+        wCtx.clearRect(0,0,190,190);
         for (let i = 0; i < nagrodyObj.length; i++) {
             wCtx.beginPath();
             wCtx.fillStyle = koloryKola[i];
-            wCtx.moveTo(90, 90);
-            wCtx.arc(90, 90, 90, i * kat, (i + 1) * kat);
+            wCtx.moveTo(95, 95);
+            wCtx.arc(95, 95, 95, i * kat, (i + 1) * kat);
             wCtx.fill();
+            wCtx.lineWidth = 2;
+            wCtx.strokeStyle = 'rgba(255,255,255,0.4)';
             wCtx.stroke();
 
             wCtx.save();
-            wCtx.translate(90, 90);
+            wCtx.translate(95, 95);
             wCtx.rotate(i * kat + kat / 2);
-            wCtx.fillStyle = '#000';
-            wCtx.font = 'bold 11px sans-serif';
-            wCtx.fillText(nagrodyObj[i].label, 28, 4);
+            wCtx.fillStyle = '#ffffff';
+            wCtx.font = 'bold 12px sans-serif';
+            wCtx.shadowColor = "rgba(0,0,0,0.6)";
+            wCtx.shadowBlur = 4;
+            wCtx.fillText(nagrodyObj[i].label, 30, 4);
             wCtx.restore();
         }
     }
@@ -1183,7 +1183,7 @@
 
     let czyKreci = false;
     function zakrecKolem() {
-        const KOSZT_KOLA = 500; // BUFF: Tylko 500 pkt zamiast 1000!
+        const KOSZT_KOLA = 500;
         if (czyKreci || punkty < KOSZT_KOLA) return;
         
         punkty -= KOSZT_KOLA;
@@ -1193,7 +1193,6 @@
         let selectedIndex = Math.floor(Math.random() * nagrodyObj.length);
         let segmentAngle = 360 / nagrodyObj.length;
         
-        // Wyliczenie kąta tak, by po obrocie wskaźnik na samej górze (270deg w standardowym układzie) trafił na wybrane pole
         let targetSegmentCenter = selectedIndex * segmentAngle + (segmentAngle / 2);
         let desiredAngle = 270 - targetSegmentCenter;
         
@@ -1219,7 +1218,6 @@
                 alert(`🤖 BUFF! Zyskujesz +${nagroda.val} Autoklikaczy!`);
             }
 
-            // Reset rotacji bez widocznego przeskoku
             wCanvas.style.transition = 'none';
             let normalizedRotation = totalRotation % 360;
             wCanvas.style.transform = `rotate(${normalizedRotation}deg)`;
@@ -1228,7 +1226,6 @@
         }, 4000);
     }
 
-    // --- Autoklikacz Loop ---
     setInterval(() => {
         if (autoKlikatory > 0) {
             punkty += Math.floor((autoKlikatory * predkoscPetli) * pobierzMnoznikPrestizu());
@@ -1237,7 +1234,6 @@
         }
     }, 1000);
 
-    // --- System Osiągnięć ---
     function sprawdzOsiagniecia() {
         if (punkty >= 10) odblokujBadge('badge-1');
         if (punkty >= 100) odblokujBadge('badge-2');
@@ -1259,7 +1255,6 @@
         document.getElementById('ach-percent').innerText = Math.round((unlocked / all) * 100);
     }
 
-    // --- Aktualizacja UI i Zapis ---
     function aktualizujWidok() {
         document.getElementById('click-count').innerText = `Punkty: ${Math.floor(punkty)}`;
         document.getElementById('prestige-info').innerText = `⭐ Poziom Prestiżu: ${prestizLvl} (+${prestizLvl * 50}% Punktów)`;
@@ -1270,11 +1265,12 @@
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
         document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli} pkt`;
 
-        // Koło fortuny kosztuje teraz 500 pkt
         document.getElementById('wheel-btn').disabled = punkty < 500 || czyKreci;
-        document.getElementById('prestige-btn').disabled = punkty < 25000;
+        
+        // Zmiana tekstu i dostępności prestiżu
+        document.getElementById('prestige-btn').innerText = `Awanse za ${kosztPrestizu.toLocaleString()} pkt (+1 ⭐)`;
+        document.getElementById('prestige-btn').disabled = punkty < kosztPrestizu;
 
-        // Aktualizacja wyglądu skórek
         Object.keys(skorkiDef).forEach(icon => {
             let btn = document.getElementById(`skin-${icon}`);
             if (btn) {
@@ -1288,7 +1284,6 @@
             }
         });
 
-        // Zapis stanu
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
         localStorage.setItem('miloszka_koszt_moc', kosztUlepszenia);
@@ -1299,6 +1294,7 @@
         localStorage.setItem('miloszka_time_speed', predkoscPetli);
         localStorage.setItem('miloszka_koszt_time', kosztPetli);
         localStorage.setItem('miloszka_prestiz', prestizLvl);
+        localStorage.setItem('miloszka_koszt_prestiz', kosztPrestizu);
     }
 
     function resetujGre() {
@@ -1308,7 +1304,6 @@
         }
     }
 
-    // Startowa inicjalizacja
     aktualizujSkorkeGlownejKuli();
     aktualizujWidok();
     sprawdzOsiagniecia();
