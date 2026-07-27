@@ -109,7 +109,7 @@
 
         .game-zone {
             background: rgba(0, 0, 0, 0.4);
-            max-width: 520px;
+            max-width: 540px;
             margin: 0 auto 30px auto;
             padding: 25px;
             border-radius: 24px;
@@ -284,7 +284,7 @@
             transform: scale(0.98);
         }
 
-        /* SEKCJA SKLEPU ZWIERZAKÓW BEZPOŚREDNIO POD UPGRADAMI */
+        /* SEKCJA SKLEPU ZWIERZAKÓW - NAPRAWIONA WRAZ Z NAKŁADANIEM TEKSTÓW */
         .pets-shop-box {
             background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(135, 206, 250, 0.25));
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -312,15 +312,18 @@
             flex-wrap: wrap;
         }
 
+        /* Wyższy i szerszy box eliminujący obcinanie napisów */
         .pet-card {
-            background: rgba(0, 0, 0, 0.35);
+            background: rgba(0, 0, 0, 0.4);
             border: 2px solid rgba(255,255,255,0.2);
             border-radius: 14px;
-            padding: 10px;
-            width: 105px;
+            padding: 8px 6px 10px 6px;
+            width: 110px;
+            min-height: 155px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: space-between;
             gap: 4px;
             transition: all 0.2s;
         }
@@ -337,23 +340,29 @@
         }
 
         .pet-emoji {
-            font-size: 32px;
+            font-size: 30px;
+            line-height: 1;
         }
 
         .pet-name {
-            font-size: 0.78em;
+            font-size: 0.75em;
             font-weight: bold;
+            line-height: 1.1;
         }
 
         .pet-desc {
-            font-size: 0.65em;
-            opacity: 0.9;
-            min-height: 26px;
+            font-size: 0.62em;
+            opacity: 0.95;
+            line-height: 1.15;
+            word-wrap: break-word;
+            hyphens: auto;
+            margin: 2px 0;
+            padding: 0 2px;
         }
 
         .pet-btn {
-            font-size: 0.72em;
-            padding: 5px 6px;
+            font-size: 0.68em;
+            padding: 6px 4px;
             border: none;
             border-radius: 8px;
             font-weight: bold;
@@ -365,7 +374,7 @@
         }
 
         .pet-btn:hover:not(:disabled) {
-            transform: scale(1.05);
+            transform: scale(1.03);
         }
 
         .pet-btn:disabled {
@@ -1059,12 +1068,13 @@
     let comboMultiplier = 1;
     let comboTimer = null;
 
-    // --- PODWYŻSZONE KOSZTY ZWIERZAKÓW ---
+    // --- ZWIERZAKI (Dodano nowego peta: Smoka Szmaragdowego + Zmieniono opis & działanie Cyber-Psa) ---
     const petyDef = [
         { id: 'dog', emoji: '🐶', name: 'Piesek Puszka', cost: 1000, desc: '+2 Moc Klikania' },
         { id: 'cat', emoji: '🐱', name: 'Kot Mruczek', cost: 3500, desc: '+5 Pkt/s' },
         { id: 'fox', emoji: '🦊', name: 'Lisek Chytrusek', cost: 10000, desc: '+2 Mnożnik Krytyka' },
-        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: 'Auto-strzela w fizyce!' }
+        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: '🤖 Ładuje Złoty Szał +5%!' },
+        { id: 'dragon', emoji: '🐉', name: 'Smoczek', cost: 100000, desc: '🔥 +10% Szansy na Krytyk!' }
     ];
 
     let kupionePety = JSON.parse(localStorage.getItem('miloszka_pets')) || [];
@@ -1080,6 +1090,12 @@
 
     function pobierzBonusPetaCrit() {
         return (aktywnyPet === 'fox') ? 2 : 0;
+    }
+
+    function pobierzSzanceNaCrit() {
+        let baseChance = 0.15;
+        if (aktywnyPet === 'dragon') baseChance += 0.10; // Extra 10% od Smoczka
+        return baseChance;
     }
 
     function pobierzCalkowitaMoc() {
@@ -1120,7 +1136,7 @@
             document.getElementById('combo-info').innerText = `🔥 COMBO x${comboMultiplier}! (${comboCount} kliknięć)`;
         }
 
-        let jestCrit = Math.random() < 0.15;
+        let jestCrit = Math.random() < pobierzSzanceNaCrit();
         let mnoznikSzalu = isFrenzyActive ? 2 : 1;
         let cMoc = pobierzCalkowitaMoc();
         let cCrit = pobierzCalkowityMnoznikCrit();
@@ -1452,6 +1468,7 @@
         }, 4000);
     }
 
+    // TYKER INTERWAŁU (Autokliki + Działanie Cyber-Psa)
     setInterval(() => {
         let iloscAuto = autoKlikatory + pobierzBonusPetaAuto();
         if (iloscAuto > 0) {
@@ -1460,14 +1477,17 @@
             aktualizujWidok();
         }
 
-        if (aktywnyPet === 'robo' && physicsBalls.length > 0) {
-            let randomIndex = Math.floor(Math.random() * physicsBalls.length);
-            physicsBalls.splice(randomIndex, 1);
-            let mocEfekt = pobierzCalkowitaMoc();
-            let bonus = Math.max(1, Math.floor(mocEfekt * 1.5));
-            dodajPunktyZFizyki(bonus, null, "");
-            zagrajdzwiek(1200, 'square', 0.04);
-            aktualizujLicznikPilek();
+        // NOWE DZIAŁANIE CYBER-PSA: Ładowanie paska Złotego Szału
+        if (aktywnyPet === 'robo') {
+            if (!isFrenzyActive) {
+                frenzyProgress += 5;
+                if (frenzyProgress >= 100) {
+                    aktywujZlotySzal();
+                }
+                document.getElementById('frenzy-bar').style.width = Math.min(100, frenzyProgress) + '%';
+            }
+            punkty += Math.floor(10 * pobierzMnoznikPrestizu());
+            aktualizujWidok();
         }
     }, 1000);
 
@@ -1499,8 +1519,9 @@
         let sumaMocy = pobierzCalkowitaMoc();
         let sumaAuto = (autoKlikatory + pobierzBonusPetaAuto()) * predkoscPetli;
         let sumaCrit = pobierzCalkowityMnoznikCrit();
+        let szansaCritProcent = Math.round(pobierzSzanceNaCrit() * 100);
 
-        document.getElementById('stats-info').innerText = `Moc: ${sumaMocy} | Autoklik/s: ${sumaAuto} | Krytyk: 15% (x${sumaCrit})`;
+        document.getElementById('stats-info').innerText = `Moc: ${sumaMocy} | Autoklik/s: ${sumaAuto} | Krytyk: ${szansaCritProcent}% (x${sumaCrit})`;
         
         document.getElementById('cost-upgrade').innerText = `Koszt: ${kosztUlepszenia} pkt`;
         document.getElementById('cost-auto').innerText = `Koszt: ${kosztAutoKlikacza} pkt`;
