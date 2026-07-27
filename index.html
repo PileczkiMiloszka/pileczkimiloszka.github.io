@@ -284,7 +284,6 @@
             transform: scale(0.98);
         }
 
-        /* SEKCJA SKLEPU ZWIERZAKÓW - NAPRAWIONA WRAZ Z NAKŁADANIEM TEKSTÓW */
         .pets-shop-box {
             background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(135, 206, 250, 0.25));
             border: 2px solid rgba(255, 255, 255, 0.3);
@@ -312,7 +311,6 @@
             flex-wrap: wrap;
         }
 
-        /* Wyższy i szerszy box eliminujący obcinanie napisów */
         .pet-card {
             background: rgba(0, 0, 0, 0.4);
             border: 2px solid rgba(255,255,255,0.2);
@@ -590,6 +588,7 @@
             to { transform: scale(1.15); }
         }
 
+        /* Ulepszony latający tekst */
         .floating-text {
             position: fixed;
             font-weight: 900;
@@ -599,6 +598,23 @@
             animation: floatUp 0.8s ease-out forwards;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             z-index: 10000;
+        }
+
+        /* Dedykowany styl napisu podczas Złotego Szału na samej górze */
+        .floating-text.top-frenzy {
+            top: 70px !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            font-size: 38px !important;
+            color: #fffb00 !important;
+            text-shadow: 0 0 15px #ff4500, 2px 2px 5px #000;
+            animation: floatTopFrenzy 0.7s ease-out forwards !important;
+        }
+
+        @keyframes floatTopFrenzy {
+            0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(0.9); }
+            50% { transform: translateX(-50%) translateY(-15px) scale(1.2); }
+            100% { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(1); }
         }
 
         .floating-text.crit {
@@ -716,7 +732,7 @@
         </button>
     </div>
 
-    <!-- SKLEP ZWIERZAKÓW UMIESZCZONY POD SKLEPEM Z UPGRADAMI -->
+    <!-- SKLEP ZWIERZAKÓW -->
     <div class="pets-shop-box" id="sklep-zoologiczny">
         <div class="pets-shop-title">🐾 Sklep Zoologiczny "Puszka & S-ka"</div>
         <div class="pets-container" id="pets-list">
@@ -807,14 +823,19 @@
 
     function tworzLatajacyTekst(event, txt, jestCrit = false) {
         const el = document.createElement('div');
-        el.className = 'floating-text' + (jestCrit ? ' crit' : '');
+        
+        // WYŚWIETLANIE NA GÓRZE PODCZAS ZŁOTEGO SZAŁU
+        if (isFrenzyActive) {
+            el.className = 'floating-text top-frenzy';
+        } else {
+            el.className = 'floating-text' + (jestCrit ? ' crit' : '');
+            let x = event ? (event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : window.innerWidth / 2)) : window.innerWidth / 2;
+            let y = event ? (event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : window.innerHeight / 2)) : window.innerHeight / 2;
+            el.style.left = (x - 20) + 'px';
+            el.style.top = (y - 30) + 'px';
+        }
+
         el.innerText = txt;
-        
-        let x = event ? (event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : window.innerWidth / 2)) : window.innerWidth / 2;
-        let y = event ? (event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : window.innerHeight / 2)) : window.innerHeight / 2;
-        
-        el.style.left = (x - 20) + 'px';
-        el.style.top = (y - 30) + 'px';
         document.body.appendChild(el);
 
         setTimeout(() => el.remove(), 800);
@@ -1068,12 +1089,12 @@
     let comboMultiplier = 1;
     let comboTimer = null;
 
-    // --- ZWIERZAKI (Dodano nowego peta: Smoka Szmaragdowego + Zmieniono opis & działanie Cyber-Psa) ---
+    // PETY (Aktualizacja opisu dla Cyber-Psa)
     const petyDef = [
         { id: 'dog', emoji: '🐶', name: 'Piesek Puszka', cost: 1000, desc: '+2 Moc Klikania' },
         { id: 'cat', emoji: '🐱', name: 'Kot Mruczek', cost: 3500, desc: '+5 Pkt/s' },
         { id: 'fox', emoji: '🦊', name: 'Lisek Chytrusek', cost: 10000, desc: '+2 Mnożnik Krytyka' },
-        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: '🤖 Ładuje Złoty Szał +5%!' },
+        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: '🤖 Klik dajesz +5% Szału!' },
         { id: 'dragon', emoji: '🐉', name: 'Smoczek', cost: 100000, desc: '🔥 +10% Szansy na Krytyk!' }
     ];
 
@@ -1094,7 +1115,7 @@
 
     function pobierzSzanceNaCrit() {
         let baseChance = 0.15;
-        if (aktywnyPet === 'dragon') baseChance += 0.10; // Extra 10% od Smoczka
+        if (aktywnyPet === 'dragon') baseChance += 0.10;
         return baseChance;
     }
 
@@ -1148,8 +1169,10 @@
         let zdobyte = Math.floor(baza * pobierzMnoznikPrestizu());
         punkty += zdobyte;
 
+        // NOWA LOGIKA CYBER-PSA: +5% DO SZAŁU TYLKO PODCZAS KLIKANIA
         if (!isFrenzyActive) {
-            frenzyProgress += 3.5;
+            let dodatekFrenzy = (aktywnyPet === 'robo') ? 5.0 : 3.5;
+            frenzyProgress += dodatekFrenzy;
             if (frenzyProgress >= 100) {
                 aktywujZlotySzal();
             }
@@ -1213,7 +1236,6 @@
         document.getElementById('clicker-emoji').innerText = aktywneIcon;
     }
 
-    // LOGIKA SKLEPU ZWIERZAKÓW
     function kupLubEkwipujPeta(petId) {
         const pet = petyDef.find(p => p.id === petId);
         if (!pet) return;
@@ -1468,25 +1490,12 @@
         }, 4000);
     }
 
-    // TYKER INTERWAŁU (Autokliki + Działanie Cyber-Psa)
+    // INTERWAŁ AUTOKLIKA
     setInterval(() => {
         let iloscAuto = autoKlikatory + pobierzBonusPetaAuto();
         if (iloscAuto > 0) {
             punkty += Math.floor((iloscAuto * predkoscPetli) * pobierzMnoznikPrestizu());
             sprawdzOsiagniecia();
-            aktualizujWidok();
-        }
-
-        // NOWE DZIAŁANIE CYBER-PSA: Ładowanie paska Złotego Szału
-        if (aktywnyPet === 'robo') {
-            if (!isFrenzyActive) {
-                frenzyProgress += 5;
-                if (frenzyProgress >= 100) {
-                    aktywujZlotySzal();
-                }
-                document.getElementById('frenzy-bar').style.width = Math.min(100, frenzyProgress) + '%';
-            }
-            punkty += Math.floor(10 * pobierzMnoznikPrestizu());
             aktualizujWidok();
         }
     }, 1000);
