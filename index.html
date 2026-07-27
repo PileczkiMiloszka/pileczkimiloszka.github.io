@@ -138,12 +138,21 @@
             font-weight: bold;
             color: #ffeb3b;
             min-height: 24px;
+            transition: transform 0.1s ease;
+        }
+
+        .clicker-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
         }
 
         .clicker-container {
             position: relative;
             width: 160px;
-            margin: 20px auto;
         }
 
         .clicker-target {
@@ -173,6 +182,11 @@
             transform: scale(0.90) rotate(-3deg);
         }
 
+        /* EFEKT GLOW PRZY COMBO (DODATEK) */
+        .clicker-target.combo-glow {
+            box-shadow: 0 0 25px #ffeb3b, inset 0 -8px 15px rgba(0,0,0,0.2);
+        }
+
         body.golden-frenzy .clicker-target {
             background: radial-gradient(circle at 30% 30%, #fffbba, #ffd700);
             box-shadow: 0 0 35px #ffd700, inset 0 -8px 15px rgba(255,140,0,0.6);
@@ -184,28 +198,32 @@
             to { transform: scale(1.08); }
         }
 
-        /* LICZNIK PUNKTÓW DOKŁADNIE W KULI DLA ZŁOTEGO SZAŁU */
-        .clicker-frenzy-pts {
+        /* WSKAŹNIK PKT PO PRAWEJ STRONIE (ZAZNACZONE CZERWONE KÓŁKO) */
+        .frenzy-pts-side {
             display: none;
-            font-size: 18px;
+            position: absolute;
+            left: calc(50% + 95px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #111;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 1.1em;
             font-weight: 900;
-            color: #222;
-            background: rgba(255, 255, 255, 0.85);
-            padding: 2px 10px;
-            border-radius: 12px;
-            text-shadow: none;
-            margin-top: 2px;
-            z-index: 2;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            animation: frenzyPtsGlow 0.5s infinite alternate;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 4px 10px rgba(0,0,0,0.3);
+            border: 2px solid #fff;
+            white-space: nowrap;
+            z-index: 10;
+            animation: sideGlow 0.6s infinite alternate;
         }
 
-        @keyframes frenzyPtsGlow {
-            from { transform: scale(1); }
-            to { transform: scale(1.1); }
+        @keyframes sideGlow {
+            from { transform: translateY(-50%) scale(1); }
+            to { transform: translateY(-50%) scale(1.08); }
         }
 
-        body.golden-frenzy .clicker-frenzy-pts {
+        body.golden-frenzy .frenzy-pts-side {
             display: block;
         }
 
@@ -719,12 +737,15 @@
     <div id="combo-info">COMBO x1</div>
     <p id="stats-info">Moc: 1 | Autoklik/s: 0 | Krytyk: 15% (x5)</p>
 
-    <div class="clicker-container">
-        <div class="clicker-target" id="main-clicker" onclick="dodajPunkt(event)">
-            <span id="clicker-emoji">⚽</span>
-            <span class="clicker-frenzy-pts" id="clicker-frenzy-pts">0</span>
+    <div class="clicker-wrapper">
+        <div class="clicker-container">
+            <div class="clicker-target" id="main-clicker" onclick="dodajPunkt(event)">
+                <span id="clicker-emoji">⚽</span>
+            </div>
+            <div class="active-pet-display" id="active-pet-display"></div>
         </div>
-        <div class="active-pet-display" id="active-pet-display"></div>
+        <!-- PUNKTACJA SZAŁU W ZAZNACZONYM MIEJSCU -->
+        <div class="frenzy-pts-side" id="frenzy-pts-side">+0 pkt/klik</div>
     </div>
 
     <div style="font-size: 0.85em; font-weight: bold; margin-top: 5px;" id="frenzy-label">⚡ Energia Złotego Szału</div>
@@ -1166,6 +1187,18 @@
         return 1 + (prestizLvl * 0.5);
     }
 
+    function obliczPunktyZaKlik(jestSzala = false, wymusCrit = false) {
+        let mnoznikSzalu = jestSzala ? 2 : 1;
+        let cMoc = pobierzCalkowitaMoc();
+        let cCrit = pobierzCalkowityMnoznikCrit();
+
+        let baza = wymusCrit ? 
+            (cMoc * cCrit * mnoznikSzalu * comboMultiplier) : 
+            (cMoc * mnoznikSzalu * comboMultiplier);
+        
+        return Math.floor(baza * pobierzMnoznikPrestizu());
+    }
+
     function dodajPunkt(event) {
         comboCount++;
         if (comboCount > 25) comboMultiplier = 5;
@@ -1173,11 +1206,18 @@
         else if (comboCount > 5) comboMultiplier = 2;
         else comboMultiplier = 1;
 
+        // DODEK: BŁYSK KULI PRZY COMBO
+        const clickerEl = document.getElementById('main-clicker');
+        if (comboMultiplier > 1) {
+            clickerEl.classList.add('combo-glow');
+        }
+
         clearTimeout(comboTimer);
         comboTimer = setTimeout(() => {
             comboCount = 0;
             comboMultiplier = 1;
             document.getElementById('combo-info').innerText = `COMBO x1`;
+            clickerEl.classList.remove('combo-glow');
         }, 1200);
 
         if (comboMultiplier > 1) {
@@ -1185,15 +1225,7 @@
         }
 
         let jestCrit = Math.random() < pobierzSzanceNaCrit();
-        let mnoznikSzalu = isFrenzyActive ? 2 : 1;
-        let cMoc = pobierzCalkowitaMoc();
-        let cCrit = pobierzCalkowityMnoznikCrit();
-
-        let baza = jestCrit ? 
-            (cMoc * cCrit * mnoznikSzalu * comboMultiplier) : 
-            (cMoc * mnoznikSzalu * comboMultiplier);
-        
-        let zdobyte = Math.floor(baza * pobierzMnoznikPrestizu());
+        let zdobyte = obliczPunktyZaKlik(isFrenzyActive, jestCrit);
         punkty += zdobyte;
 
         if (!isFrenzyActive) {
@@ -1555,7 +1587,11 @@
     function aktualizujWidok() {
         let calePunkty = Math.floor(punkty);
         document.getElementById('click-count').innerText = `Punkty: ${calePunkty}`;
-        document.getElementById('clicker-frenzy-pts').innerText = calePunkty;
+        
+        // WYŚWIETLANIE ILE PKT DAJE KLIKNIĘCIE W TRACIE SZAŁU
+        let pktZaKlikWSzale = obliczPunktyZaKlik(true, false);
+        document.getElementById('frenzy-pts-side').innerText = `+${pktZaKlikWSzale} pkt/klik`;
+
         document.getElementById('prestige-info').innerText = `⭐ Poziom Prestiżu: ${prestizLvl} (+${prestizLvl * 50}% Punktów)`;
         
         let sumaMocy = pobierzCalkowitaMoc();
