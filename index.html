@@ -588,7 +588,6 @@
             to { transform: scale(1.15); }
         }
 
-        /* Ulepszony latający tekst */
         .floating-text {
             position: fixed;
             font-weight: 900;
@@ -598,23 +597,6 @@
             animation: floatUp 0.8s ease-out forwards;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
             z-index: 10000;
-        }
-
-        /* Dedykowany styl napisu podczas Złotego Szału na samej górze */
-        .floating-text.top-frenzy {
-            top: 70px !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            font-size: 38px !important;
-            color: #fffb00 !important;
-            text-shadow: 0 0 15px #ff4500, 2px 2px 5px #000;
-            animation: floatTopFrenzy 0.7s ease-out forwards !important;
-        }
-
-        @keyframes floatTopFrenzy {
-            0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(0.9); }
-            50% { transform: translateX(-50%) translateY(-15px) scale(1.2); }
-            100% { opacity: 0; transform: translateX(-50%) translateY(-30px) scale(1); }
         }
 
         .floating-text.crit {
@@ -734,7 +716,7 @@
 
     <!-- SKLEP ZWIERZAKÓW -->
     <div class="pets-shop-box" id="sklep-zoologiczny">
-        <div class="pets-shop-title">🐾 Sklep Zoologiczny "Puszka & S-ka"</div>
+        <div class="pets-shop-title">🐾 Sklep Zoologiczny</div>
         <div class="pets-container" id="pets-list">
             <!-- Pety renderują się w JS -->
         </div>
@@ -823,17 +805,13 @@
 
     function tworzLatajacyTekst(event, txt, jestCrit = false) {
         const el = document.createElement('div');
+        el.className = 'floating-text' + (jestCrit ? ' crit' : '');
         
-        // WYŚWIETLANIE NA GÓRZE PODCZAS ZŁOTEGO SZAŁU
-        if (isFrenzyActive) {
-            el.className = 'floating-text top-frenzy';
-        } else {
-            el.className = 'floating-text' + (jestCrit ? ' crit' : '');
-            let x = event ? (event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : window.innerWidth / 2)) : window.innerWidth / 2;
-            let y = event ? (event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : window.innerHeight / 2)) : window.innerHeight / 2;
-            el.style.left = (x - 20) + 'px';
-            el.style.top = (y - 30) + 'px';
-        }
+        let x = event ? (event.clientX || (event.touches && event.touches[0] ? event.touches[0].clientX : window.innerWidth / 2)) : window.innerWidth / 2;
+        let y = event ? (event.clientY || (event.touches && event.touches[0] ? event.touches[0].clientY : window.innerHeight / 2)) : window.innerHeight / 2;
+        
+        el.style.left = (x - 20) + 'px';
+        el.style.top = (y - 30) + 'px';
 
         el.innerText = txt;
         document.body.appendChild(el);
@@ -1089,12 +1067,12 @@
     let comboMultiplier = 1;
     let comboTimer = null;
 
-    // PETY (Aktualizacja opisu dla Cyber-Psa)
+    // PETY
     const petyDef = [
         { id: 'dog', emoji: '🐶', name: 'Piesek Puszka', cost: 1000, desc: '+2 Moc Klikania' },
         { id: 'cat', emoji: '🐱', name: 'Kot Mruczek', cost: 3500, desc: '+5 Pkt/s' },
         { id: 'fox', emoji: '🦊', name: 'Lisek Chytrusek', cost: 10000, desc: '+2 Mnożnik Krytyka' },
-        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: '🤖 Klik dajesz +5% Szału!' },
+        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: '+5% energii Szału przy kliknięciu!' },
         { id: 'dragon', emoji: '🐉', name: 'Smoczek', cost: 100000, desc: '🔥 +10% Szansy na Krytyk!' }
     ];
 
@@ -1169,7 +1147,6 @@
         let zdobyte = Math.floor(baza * pobierzMnoznikPrestizu());
         punkty += zdobyte;
 
-        // NOWA LOGIKA CYBER-PSA: +5% DO SZAŁU TYLKO PODCZAS KLIKANIA
         if (!isFrenzyActive) {
             let dodatekFrenzy = (aktywnyPet === 'robo') ? 5.0 : 3.5;
             frenzyProgress += dodatekFrenzy;
@@ -1253,12 +1230,12 @@
                 kupionePety.push(petId);
                 aktywnyPet = petId;
                 zagrajdzwiek(1100, 'triangle', 0.25);
-                odblokujBadge('badge-7');
             }
         }
 
         localStorage.setItem('miloszka_pets', JSON.stringify(kupionePety));
         localStorage.setItem('miloszka_active_pet', aktywnyPet || '');
+        sprawdzOsiagniecia();
         aktualizujWidok();
     }
 
@@ -1505,6 +1482,7 @@
         if (punkty >= 100) odblokujBadge('badge-2');
         if (punkty >= 1000) odblokujBadge('badge-3');
         if (punkty >= 10000) odblokujBadge('badge-4');
+        if (kupionePety.length > 0) odblokujBadge('badge-7');
     }
 
     function odblokujBadge(id) {
