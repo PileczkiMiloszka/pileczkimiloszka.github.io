@@ -170,7 +170,6 @@
             transform: scale(0.90) rotate(-3deg);
         }
 
-        /* EFEKT DLA AKTYWNEGO ZWIERZAKA TUSZ OBOK PIŁKI */
         .active-pet-display {
             position: absolute;
             bottom: -10px;
@@ -203,20 +202,20 @@
             transition: width 0.1s linear;
         }
 
-        .skins-box, .pets-box {
+        .skins-box {
             background: rgba(255,255,255,0.1);
             padding: 12px;
             border-radius: 16px;
             margin: 15px 0;
         }
 
-        .skins-title, .pets-title {
+        .skins-title {
             font-size: 0.95em;
             font-weight: bold;
             margin-bottom: 8px;
         }
 
-        .skins-container, .pets-container {
+        .skins-container {
             display: flex;
             justify-content: center;
             gap: 10px;
@@ -253,65 +252,6 @@
             filter: grayscale(0.8);
         }
 
-        /* ZWIERZAKI STYLE */
-        .pet-card {
-            background: rgba(0, 0, 0, 0.25);
-            border: 2px solid rgba(255,255,255,0.2);
-            border-radius: 14px;
-            padding: 10px;
-            width: 110px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-
-        .pet-card.owned {
-            border-color: #00e676;
-            background: rgba(0, 230, 118, 0.15);
-        }
-
-        .pet-card.equipped {
-            border-color: gold;
-            box-shadow: 0 0 10px gold;
-            background: rgba(255, 215, 0, 0.25);
-        }
-
-        .pet-emoji {
-            font-size: 32px;
-        }
-
-        .pet-name {
-            font-size: 0.8em;
-            font-weight: bold;
-        }
-
-        .pet-desc {
-            font-size: 0.68em;
-            opacity: 0.85;
-            min-height: 28px;
-        }
-
-        .pet-btn {
-            font-size: 0.75em;
-            padding: 4px 8px;
-            border: none;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            background: #00e676;
-            color: #111;
-        }
-
-        .pet-btn:disabled {
-            background: gray;
-            color: #ddd;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
         .shop {
             margin-top: 20px;
             display: flex;
@@ -342,6 +282,97 @@
 
         .shop-btn:active {
             transform: scale(0.98);
+        }
+
+        /* SEKCJA SKLEPU ZWIERZAKÓW BEZPOŚREDNIO POD UPGRADAMI */
+        .pets-shop-box {
+            background: linear-gradient(135deg, rgba(255, 105, 180, 0.25), rgba(135, 206, 250, 0.25));
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 20px;
+            padding: 15px;
+            margin-top: 20px;
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.1);
+        }
+
+        .pets-shop-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pets-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .pet-card {
+            background: rgba(0, 0, 0, 0.35);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 14px;
+            padding: 10px;
+            width: 105px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s;
+        }
+
+        .pet-card.owned {
+            border-color: #00e676;
+            background: rgba(0, 230, 118, 0.2);
+        }
+
+        .pet-card.equipped {
+            border-color: gold;
+            box-shadow: 0 0 12px gold;
+            background: rgba(255, 215, 0, 0.3);
+        }
+
+        .pet-emoji {
+            font-size: 32px;
+        }
+
+        .pet-name {
+            font-size: 0.78em;
+            font-weight: bold;
+        }
+
+        .pet-desc {
+            font-size: 0.65em;
+            opacity: 0.9;
+            min-height: 26px;
+        }
+
+        .pet-btn {
+            font-size: 0.72em;
+            padding: 5px 6px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            background: #00e676;
+            color: #111;
+            transition: transform 0.1s;
+        }
+
+        .pet-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+        }
+
+        .pet-btn:disabled {
+            background: #555;
+            color: #aaa;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .wheel-box {
@@ -530,7 +561,6 @@
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
         }
 
-        /* LATAJĄCY PREZENT */
         .flying-present {
             position: fixed;
             font-size: 45px;
@@ -613,7 +643,7 @@
 <nav>
     <a href="#">Strona Główna</a>
     <a href="#gra">Gra Klikacz</a>
-    <a href="#pety">Zwierzątka</a>
+    <a href="#sklep-zoologiczny">Sklep Zoologiczny</a>
     <a href="#osiagniecia">Osiągnięcia</a>
     <a href="#fizyka">Plac Fizyki</a>
 </nav>
@@ -660,17 +690,9 @@
         </div>
     </div>
 
-    <!-- SKLEP ZE ZWIERZAKAMI (PETY) -->
-    <div class="pets-box" id="pety">
-        <div class="pets-title">🐾 Schronisko Zwierzaków (Boosty Pasywne):</div>
-        <div class="pets-container" id="pets-list">
-            <!-- Pety renderują się w JS -->
-        </div>
-    </div>
-
     <!-- SKLEP Z ULEPSZENIAMI -->
     <div class="shop">
-        <h3>🛒 Sklep z ulepszeniami</h3>
+        <h3>🛒 Sklep z Ulepszeniami</h3>
         <button class="shop-btn" id="btn-upgrade" onclick="kupUlepszenie()">
             <span>💪 Mocniejszy Klik (+1/klik)</span> <span id="cost-upgrade">Koszt: 10 pkt</span>
         </button>
@@ -683,6 +705,14 @@
         <button class="shop-btn" id="btn-time" onclick="kupPettleCzasowa()">
             <span>⏳ Pętla Czasu (Szybsze Autokliki)</span> <span id="cost-time">Koszt: 300 pkt</span>
         </button>
+    </div>
+
+    <!-- SKLEP ZWIERZAKÓW UMIESZCZONY POD SKLEPEM Z UPGRADAMI -->
+    <div class="pets-shop-box" id="sklep-zoologiczny">
+        <div class="pets-shop-title">🐾 Sklep Zoologiczny "Puszka & S-ka"</div>
+        <div class="pets-container" id="pets-list">
+            <!-- Pety renderują się w JS -->
+        </div>
     </div>
 
     <!-- KOŁO FORTUNY -->
@@ -1029,12 +1059,12 @@
     let comboMultiplier = 1;
     let comboTimer = null;
 
-    // --- SYSTEM ZWIERZAKÓW (PETÓW) ---
+    // --- PODWYŻSZONE KOSZTY ZWIERZAKÓW ---
     const petyDef = [
-        { id: 'dog', emoji: '🐶', name: 'Piesek Puszka', cost: 150, desc: '+2 Moc Klikania' },
-        { id: 'cat', emoji: '🐱', name: 'Kot Mruczek', cost: 400, desc: '+5 Pkt/s' },
-        { id: 'fox', emoji: '🦊', name: 'Lisek Chytrusek', cost: 1000, desc: '+2 Mnożnik Krytyka' },
-        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 3500, desc: 'Auto-strzela w fizyce!' }
+        { id: 'dog', emoji: '🐶', name: 'Piesek Puszka', cost: 1000, desc: '+2 Moc Klikania' },
+        { id: 'cat', emoji: '🐱', name: 'Kot Mruczek', cost: 3500, desc: '+5 Pkt/s' },
+        { id: 'fox', emoji: '🦊', name: 'Lisek Chytrusek', cost: 10000, desc: '+2 Mnożnik Krytyka' },
+        { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: 'Auto-strzela w fizyce!' }
     ];
 
     let kupionePety = JSON.parse(localStorage.getItem('miloszka_pets')) || [];
@@ -1167,13 +1197,12 @@
         document.getElementById('clicker-emoji').innerText = aktywneIcon;
     }
 
-    // INTERAKCJE DLA ZWIERZAKÓW
+    // LOGIKA SKLEPU ZWIERZAKÓW
     function kupLubEkwipujPeta(petId) {
         const pet = petyDef.find(p => p.id === petId);
         if (!pet) return;
 
         if (kupionePety.includes(petId)) {
-            // Przełączanie aktywnego
             if (aktywnyPet === petId) {
                 aktywnyPet = null;
             } else {
@@ -1181,7 +1210,6 @@
             }
             zagrajdzwiek(700, 'sine', 0.1);
         } else {
-            // Kupowanie
             if (punkty >= pet.cost) {
                 punkty -= pet.cost;
                 kupionePety.push(petId);
@@ -1208,7 +1236,7 @@
             if (jestEkwipowany) cardClass += ' equipped';
             else if (jestKupiony) cardClass += ' owned';
 
-            let btnText = `Kup (${pet.cost}pkt)`;
+            let btnText = `Kup (${pet.cost.toLocaleString()} pkt)`;
             if (jestEkwipowany) btnText = 'Aktywny';
             else if (jestKupiony) btnText = 'Wybierz';
 
@@ -1224,7 +1252,6 @@
             `;
         });
 
-        // Pokazywanie peta przy kuli
         const display = document.getElementById('active-pet-display');
         if (aktywnyPet) {
             const p = petyDef.find(x => x.id === aktywnyPet);
@@ -1298,7 +1325,6 @@
         }
     }
 
-    // LATAJĄCY PREZENT
     function spawnowajPrezent() {
         const p = document.createElement('div');
         let czyZloty = Math.random() < 0.2; 
@@ -1341,7 +1367,6 @@
         if (Math.random() < 0.4) spawnowajPrezent();
     }, 20000);
 
-    // KOŁO FORTUNY
     const wCanvas = document.getElementById('wheel-canvas');
     const wCtx = wCanvas.getContext('2d');
     
@@ -1427,7 +1452,6 @@
         }, 4000);
     }
 
-    // INTERWAŁ AUTOKLIKU ORAZ SPECJALNYCH ZWIERZAKÓW
     setInterval(() => {
         let iloscAuto = autoKlikatory + pobierzBonusPetaAuto();
         if (iloscAuto > 0) {
@@ -1436,7 +1460,6 @@
             aktualizujWidok();
         }
 
-        // CYBER PIES STRZELA W PIŁKI W FIZYCE
         if (aktywnyPet === 'robo' && physicsBalls.length > 0) {
             let randomIndex = Math.floor(Math.random() * physicsBalls.length);
             physicsBalls.splice(randomIndex, 1);
