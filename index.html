@@ -197,34 +197,6 @@
             to { transform: scale(1.08); }
         }
 
-        .frenzy-pts-side {
-            display: none;
-            position: absolute;
-            left: calc(50% + 95px);
-            top: 50%;
-            transform: translateY(-50%);
-            background: linear-gradient(135deg, #ffd700, #ff8c00);
-            color: #111;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-size: 1.1em;
-            font-weight: 900;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.8), 0 4px 10px rgba(0,0,0,0.3);
-            border: 2px solid #fff;
-            white-space: nowrap;
-            z-index: 10;
-            animation: sideGlow 0.6s infinite alternate;
-        }
-
-        @keyframes sideGlow {
-            from { transform: translateY(-50%) scale(1); }
-            to { transform: translateY(-50%) scale(1.08); }
-        }
-
-        body.golden-frenzy .frenzy-pts-side {
-            display: block;
-        }
-
         .active-pet-display {
             position: absolute;
             bottom: -10px;
@@ -742,7 +714,6 @@
             </div>
             <div class="active-pet-display" id="active-pet-display"></div>
         </div>
-        <div class="frenzy-pts-side" id="frenzy-pts-side">+0 pkt/klik</div>
     </div>
 
     <div style="font-size: 0.85em; font-weight: bold; margin-top: 5px;" id="frenzy-label">⚡ Energia Złotego Szału</div>
@@ -1582,9 +1553,6 @@
     function aktualizujWidok() {
         let calePunkty = Math.floor(punkty);
         document.getElementById('click-count').innerText = `Punkty: ${calePunkty}`;
-        
-        let pktZaKlikWSzale = obliczPunktyZaKlik(true, false);
-        document.getElementById('frenzy-pts-side').innerText = `+${pktZaKlikWSzale} pkt/klik`;
 
         document.getElementById('prestige-info').innerText = `⭐ Poziom Prestiżu: ${prestizLvl} (+${prestizLvl * 50}% Punktów)`;
         
