@@ -675,6 +675,19 @@
             padding: 20px;
             background: rgba(0,0,0,0.25);
             margin-top: 30px;
+            position: relative;
+        }
+
+        .author-watermark {
+            position: absolute;
+            bottom: 35px;
+            right: 25px;
+            font-size: 11px;
+            color: #000;
+            opacity: 0.1;
+            font-weight: bold;
+            pointer-events: none;
+            user-select: none;
         }
     </style>
 </head>
@@ -820,6 +833,7 @@
 
 <footer>
     © 2026 pilkimiloszka — Wszystkie prawa zastrzeżone.
+    <div class="author-watermark">Autor-Miłosz Balcerak</div>
 </footer>
 
 <script>
