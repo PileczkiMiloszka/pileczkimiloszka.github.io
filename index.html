@@ -173,7 +173,6 @@
             transform: scale(0.90) rotate(-3deg);
         }
 
-        /* Styl kółka w czasie Złotego Szału */
         body.golden-frenzy .clicker-target {
             background: radial-gradient(circle at 30% 30%, #fffbba, #ffd700);
             box-shadow: 0 0 30px #ffd700, inset 0 -8px 15px rgba(255,140,0,0.5);
@@ -516,7 +515,6 @@
             margin-top: 10px;
         }
 
-        /* Ulepszone odznaki z podpowiedziami po najechaniu */
         .badge {
             background: rgba(255,255,255,0.15);
             padding: 8px 12px;
@@ -1101,6 +1099,7 @@
     let aktywneIcon = localStorage.getItem('miloszka_skin') || '⚽';
     let frenzyProgress = 0;
     let isFrenzyActive = false;
+    let frenzyInterval = null;
 
     let comboCount = 0;
     let comboMultiplier = 1;
@@ -1212,6 +1211,7 @@
     }
 
     function aktywujZlotySzal() {
+        if (frenzyInterval) clearInterval(frenzyInterval);
         isFrenzyActive = true;
         frenzyProgress = 100;
         document.body.classList.add('golden-frenzy');
@@ -1219,11 +1219,12 @@
         zagrajdzwiek(1000, 'sawtooth', 0.4);
         odblokujBadge('badge-5');
 
-        let interval = setInterval(() => {
+        frenzyInterval = setInterval(() => {
             frenzyProgress -= 2;
             document.getElementById('frenzy-bar').style.width = Math.max(0, frenzyProgress) + '%';
             if (frenzyProgress <= 0) {
-                clearInterval(interval);
+                clearInterval(frenzyInterval);
+                frenzyInterval = null;
                 isFrenzyActive = false;
                 document.body.classList.remove('golden-frenzy');
                 document.getElementById('frenzy-label').innerText = '⚡ Energia Złotego Szału';
@@ -1452,10 +1453,12 @@
             wCtx.translate(95, 95);
             wCtx.rotate(i * kat + kat / 2);
             wCtx.fillStyle = '#ffffff';
-            wCtx.font = 'bold 12px sans-serif';
+            wCtx.font = 'bold 11px sans-serif';
+            wCtx.textAlign = 'center';
+            wCtx.textBaseline = 'middle';
             wCtx.shadowColor = "rgba(0,0,0,0.6)";
             wCtx.shadowBlur = 4;
-            wCtx.fillText(nagrodyObj[i].label, 30, 4);
+            wCtx.fillText(nagrodyObj[i].label, 58, 0);
             wCtx.restore();
         }
     }
