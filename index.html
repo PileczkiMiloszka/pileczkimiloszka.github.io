@@ -229,35 +229,6 @@
             transition: width 0.1s linear;
         }
 
-        .mega-boost-box {
-            margin: 15px 0;
-            background: rgba(255,255,255,0.1);
-            padding: 10px;
-            border-radius: 14px;
-        }
-
-        .boost-btn {
-            background: linear-gradient(135deg, #ff0055, #ff5000);
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            transition: transform 0.1s;
-        }
-
-        .boost-btn:hover:not(:disabled) {
-            transform: scale(1.05);
-        }
-
-        .boost-btn:disabled {
-            background: #555;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-
         .skins-box {
             background: rgba(255,255,255,0.1);
             padding: 12px;
@@ -593,7 +564,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             flex-wrap: wrap;
             margin-top: 15px;
         }
@@ -628,10 +599,6 @@
 
         .action-btn.danger {
             background: linear-gradient(135deg, #ff416c, #ff4b2b);
-        }
-
-        .action-btn.blackhole-btn {
-            background: linear-gradient(135deg, #8a2be2, #4b0082);
         }
 
         .flying-present {
@@ -767,13 +734,6 @@
         <div class="frenzy-bar" id="frenzy-bar"></div>
     </div>
 
-    <!-- MEGA BOOST ABILITY -->
-    <div class="mega-boost-box">
-        <button class="boost-btn" id="mega-boost-btn" onclick="aktywujMegaBoost()">
-            💥 Aktywuj Turbodoładowanie (x3) <span id="boost-cooldown"></span>
-        </button>
-    </div>
-
     <div class="skins-box">
         <div class="skins-title">🎨 Wybierz Skórkę Piłeczki:</div>
         <div class="skins-container">
@@ -817,7 +777,7 @@
             <canvas id="wheel-canvas" width="190" height="190"></canvas>
         </div>
         <button class="wheel-btn" id="wheel-btn" onclick="zakrecKolem()" disabled>
-            Zakręć (500pkt)
+            Zakręć (750pkt)
         </button>
     </div>
 
@@ -840,7 +800,6 @@
             <span class="badge" id="badge-5" title="Jak zdobyć: Aktywuj tryb Złotego Szału, klikając w kółko!">💥 Super Złoty Szał</span>
             <span class="badge" id="badge-6" title="Jak zdobyć: Kliknij w latający po ekranie prezent!">🎁 Łowca Prezentów</span>
             <span class="badge" id="badge-7" title="Jak zdobyć: Kup przynajmniej jedno zwierzątko w Sklepie Zoologicznym!">🐶 Przyjaciel Zwierząt</span>
-            <span class="badge" id="badge-8" title="Jak zdobyć: Włącz Wirówkę Grawitacyjną w module Fizyki!">🌀 Magnes Fizyczny</span>
         </div>
     </div>
 
@@ -865,7 +824,6 @@
             <input type="range" id="bounce-slider" min="0.2" max="1" step="0.05" value="0.8">
         </div>
         <button class="action-btn" onclick="stworzDeszczPilek()">🌧️ Deszcz Piłek (x8)</button>
-        <button class="action-btn blackhole-btn" onclick="przelaczCzarnaDziure()" id="blackhole-toggle-btn">🌀 Wirówka: OFF</button>
         <button class="action-btn danger" onclick="wyczyscKolo()">🧹 Wyczyść Screen</button>
     </div>
     <div style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">
@@ -880,7 +838,6 @@
 
 <script>
     let zarobioneZFizyki = 0;
-    let isBlackHoleActive = false;
 
     function dodajPunktyZFizyki(ilosc, e = null, text = "") {
         let przeliczonaIlosc = ilosc * pobierzMnoznikPrestizu();
@@ -974,16 +931,7 @@
         }
 
         update() {
-            if (isBlackHoleActive) {
-                let centerX = canvas.width / 2;
-                let centerY = canvas.height / 2;
-                let angle = Math.atan2(centerY - this.y, centerX - this.x);
-                this.vx += Math.cos(angle) * 0.8;
-                this.vy += Math.sin(angle) * 0.8;
-            } else {
-                this.vy += gravity;
-            }
-
+            this.vy += gravity;
             this.x += this.vx;
             this.y += this.vy;
 
@@ -1058,14 +1006,6 @@
         }
     }
 
-    function przelaczCzarnaDziure() {
-        isBlackHoleActive = !isBlackHoleActive;
-        const btn = document.getElementById('blackhole-toggle-btn');
-        btn.innerText = isBlackHoleActive ? '🌀 Wirówka: ON' : '🌀 Wirówka: OFF';
-        if (isBlackHoleActive) odblokujBadge('badge-8');
-        zagrajdzwiek(600, 'sawtooth', 0.2);
-    }
-
     canvas.addEventListener('mousedown', (e) => {
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
@@ -1130,16 +1070,6 @@
     function loopFizyki() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (isBlackHoleActive) {
-            ctx.beginPath();
-            ctx.arc(canvas.width / 2, canvas.height / 2, 25, 0, Math.PI * 2);
-            ctx.fillStyle = 'rgba(138, 43, 226, 0.4)';
-            ctx.fill();
-            ctx.strokeStyle = '#8a2be2';
-            ctx.lineWidth = 3;
-            ctx.stroke();
-        }
-
         physicsBalls.forEach(ball => ball.update());
         checkBallCollisions();
         physicsBalls.forEach(ball => ball.draw());
@@ -1184,9 +1114,6 @@
     let isFrenzyActive = false;
     let frenzyInterval = null;
 
-    let megaBoostActive = false;
-    let megaBoostCooldown = false;
-
     let comboCount = 0;
     let comboMultiplier = 1;
     let comboTimer = null;
@@ -1197,8 +1124,7 @@
         { id: 'cat', emoji: '🐱', name: 'Kot Mruczek', cost: 3500, desc: '+5 Pkt/s' },
         { id: 'fox', emoji: '🦊', name: 'Lisek Chytrusek', cost: 10000, desc: '+2 Mnożnik Krytyka' },
         { id: 'robo', emoji: '🤖', name: 'Cyber-Pies', cost: 35000, desc: '+5% energii Szału przy kliknięciu!' },
-        { id: 'dragon', emoji: '🐉', name: 'Smoczek', cost: 100000, desc: '🔥 +10% Szansy na Krytyk!' },
-        { id: 'space', emoji: '🌌', name: 'Kosmiczna Piłka', cost: 250000, desc: '✨ +150% do nagród z Prezentów!' }
+        { id: 'dragon', emoji: '🐉', name: 'Smoczek', cost: 100000, desc: '🔥 +10% Szansy na Krytyk!' }
     ];
 
     let kupionePety = JSON.parse(localStorage.getItem('miloszka_pets')) || [];
@@ -1242,50 +1168,14 @@
         return 1 + (prestizLvl * 0.5);
     }
 
-    function aktywujMegaBoost() {
-        if (megaBoostActive || megaBoostCooldown) return;
-
-        megaBoostActive = true;
-        let btn = document.getElementById('mega-boost-btn');
-        btn.disabled = true;
-        zagrajdzwiek(1200, 'sawtooth', 0.5);
-
-        let count = 10;
-        let boostTimer = setInterval(() => {
-            count--;
-            document.getElementById('boost-cooldown').innerText = `(${count}s)`;
-            if (count <= 0) {
-                clearInterval(boostTimer);
-                megaBoostActive = false;
-                rozpocznijCooldownBoost();
-            }
-        }, 1000);
-    }
-
-    function rozpocznijCooldownBoost() {
-        megaBoostCooldown = true;
-        let count = 30;
-        let cdTimer = setInterval(() => {
-            count--;
-            document.getElementById('boost-cooldown').innerText = `(Odnawianie: ${count}s)`;
-            if (count <= 0) {
-                clearInterval(cdTimer);
-                megaBoostCooldown = false;
-                document.getElementById('boost-cooldown').innerText = '';
-                document.getElementById('mega-boost-btn').disabled = false;
-            }
-        }, 1000);
-    }
-
     function obliczPunktyZaKlik(jestSzala = false, wymusCrit = false) {
         let mnoznikSzalu = jestSzala ? 2 : 1;
-        let mnoznikBoost = megaBoostActive ? 3 : 1;
         let cMoc = pobierzCalkowitaMoc();
         let cCrit = pobierzCalkowityMnoznikCrit();
 
         let baza = wymusCrit ? 
-            (cMoc * cCrit * mnoznikSzalu * mnoznikBoost * comboMultiplier) : 
-            (cMoc * mnoznikSzalu * mnoznikBoost * comboMultiplier);
+            (cMoc * cCrit * mnoznikSzalu * comboMultiplier) : 
+            (cMoc * mnoznikSzalu * comboMultiplier);
         
         return Math.floor(baza * pobierzMnoznikPrestizu());
     }
@@ -1538,8 +1428,7 @@
             clearInterval(anim);
             
             let mnoznikZlotego = czyZloty ? 3 : 1;
-            let mnoznikPeta = (aktywnyPet === 'space') ? 2.5 : 1;
-            let nagroda = Math.floor((pobierzCalkowitaMoc() * 25 + 50) * pobierzMnoznikPrestizu() * mnoznikZlotego * mnoznikPeta);
+            let nagroda = Math.floor((pobierzCalkowitaMoc() * 25 + 50) * pobierzMnoznikPrestizu() * mnoznikZlotego);
             punkty += nagroda;
             
             tworzLatajacyTekst(e, czyZloty ? `🌟 ZŁOTY PREZENT! +${nagroda} PKT!` : `+${nagroda} PKT!`, true);
@@ -1600,7 +1489,7 @@
 
     let czyKreci = false;
     function zakrecKolem() {
-        const KOSZT_KOLA = 500;
+        const KOSZT_KOLA = 750;
         if (czyKreci || punkty < KOSZT_KOLA) return;
         
         punkty -= KOSZT_KOLA;
@@ -1616,22 +1505,31 @@
         let fullSpins = (4 + Math.floor(Math.random() * 3)) * 360;
         let totalRotation = fullSpins + desiredAngle;
 
+        // Efekt dźwiękowy cykania koła w trakcie obrotu
+        let tickInterval = setInterval(() => {
+            zagrajdzwiek(600, 'triangle', 0.02);
+        }, 150);
+
         wCanvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99)';
         wCanvas.style.transform = `rotate(${totalRotation}deg)`;
 
         setTimeout(() => {
+            clearInterval(tickInterval);
             czyKreci = false;
             let nagroda = nagrodyObj[selectedIndex];
             
             if (nagroda.type === 'pts') {
                 let wygrana = Math.floor(nagroda.val * pobierzMnoznikPrestizu());
                 punkty += wygrana;
+                zagrajdzwiek(1200, 'sine', 0.3);
                 alert(`🎉 Wygrałeś ${wygrana} punktów!`);
             } else if (nagroda.type === 'moc') {
                 mocKlikniecia += nagroda.val;
+                zagrajdzwiek(1200, 'sine', 0.3);
                 alert(`⚡ BUFF! Twoja Moc kliknięcia wzrosła o +${nagroda.val}!`);
             } else if (nagroda.type === 'auto') {
                 autoKlikatory += nagroda.val;
+                zagrajdzwiek(1200, 'sine', 0.3);
                 alert(`🤖 BUFF! Zyskujesz +${nagroda.val} Autoklikaczy!`);
             }
 
@@ -1693,7 +1591,7 @@
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
         document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli} pkt`;
 
-        document.getElementById('wheel-btn').disabled = punkty < 500 || czyKreci;
+        document.getElementById('wheel-btn').disabled = punkty < 750 || czyKreci;
         
         document.getElementById('prestige-btn').innerText = `Awanse za ${kosztPrestizu.toLocaleString()} pkt (+1 ⭐)`;
         document.getElementById('prestige-btn').disabled = punkty < kosztPrestizu;
