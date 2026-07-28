@@ -777,7 +777,7 @@
             <canvas id="wheel-canvas" width="190" height="190"></canvas>
         </div>
         <button class="wheel-btn" id="wheel-btn" onclick="zakrecKolem()" disabled>
-            Zakręć (500pkt)
+            Zakręć (750pkt)
         </button>
     </div>
 
@@ -1489,7 +1489,7 @@
 
     let czyKreci = false;
     function zakrecKolem() {
-        const KOSZT_KOLA = 500;
+        const KOSZT_KOLA = 750;
         if (czyKreci || punkty < KOSZT_KOLA) return;
         
         punkty -= KOSZT_KOLA;
@@ -1505,22 +1505,31 @@
         let fullSpins = (4 + Math.floor(Math.random() * 3)) * 360;
         let totalRotation = fullSpins + desiredAngle;
 
+        // Efekt dźwiękowy cykania koła w trakcie obrotu
+        let tickInterval = setInterval(() => {
+            zagrajdzwiek(600, 'triangle', 0.02);
+        }, 150);
+
         wCanvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99)';
         wCanvas.style.transform = `rotate(${totalRotation}deg)`;
 
         setTimeout(() => {
+            clearInterval(tickInterval);
             czyKreci = false;
             let nagroda = nagrodyObj[selectedIndex];
             
             if (nagroda.type === 'pts') {
                 let wygrana = Math.floor(nagroda.val * pobierzMnoznikPrestizu());
                 punkty += wygrana;
+                zagrajdzwiek(1200, 'sine', 0.3);
                 alert(`🎉 Wygrałeś ${wygrana} punktów!`);
             } else if (nagroda.type === 'moc') {
                 mocKlikniecia += nagroda.val;
+                zagrajdzwiek(1200, 'sine', 0.3);
                 alert(`⚡ BUFF! Twoja Moc kliknięcia wzrosła o +${nagroda.val}!`);
             } else if (nagroda.type === 'auto') {
                 autoKlikatory += nagroda.val;
+                zagrajdzwiek(1200, 'sine', 0.3);
                 alert(`🤖 BUFF! Zyskujesz +${nagroda.val} Autoklikaczy!`);
             }
 
@@ -1582,7 +1591,7 @@
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
         document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli} pkt`;
 
-        document.getElementById('wheel-btn').disabled = punkty < 500 || czyKreci;
+        document.getElementById('wheel-btn').disabled = punkty < 750 || czyKreci;
         
         document.getElementById('prestige-btn').innerText = `Awanse za ${kosztPrestizu.toLocaleString()} pkt (+1 ⭐)`;
         document.getElementById('prestige-btn').disabled = punkty < kosztPrestizu;
