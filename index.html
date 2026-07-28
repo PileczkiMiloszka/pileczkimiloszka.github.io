@@ -118,6 +118,42 @@
             position: relative;
         }
 
+        /* SEKCJA DAILY REWARD */
+        .daily-reward-box {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(0, 230, 118, 0.3));
+            border: 2px solid #ffd700;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .daily-btn {
+            background: linear-gradient(135deg, #ffd700, #00e676);
+            color: #111;
+            border: none;
+            padding: 10px 20px;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 0.95em;
+            margin-top: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: transform 0.1s, filter 0.2s;
+        }
+
+        .daily-btn:hover:not(:disabled) {
+            transform: scale(1.05);
+            filter: brightness(1.1);
+        }
+
+        .daily-btn:disabled {
+            background: gray;
+            color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
         #click-count {
             font-size: 2.5em;
             font-weight: 900;
@@ -714,6 +750,13 @@
 
 <!-- GRA KLIKACZ -->
 <div class="game-zone" id="gra">
+    <!-- SEKCJA DZIENTNEJ NAGRODY -->
+    <div class="daily-reward-box">
+        <div style="font-weight: bold; font-size: 1.1em; color: #fff;">📅 Dzienna Nagroda</div>
+        <div id="daily-status" style="font-size: 0.85em; margin: 4px 0;">Odbierz darmowy bonus za powrót!</div>
+        <button class="daily-btn" id="daily-btn" onclick="odbierzDailyReward()">Odbierz Daily (+1,000 Pkt)</button>
+    </div>
+
     <h2>🎮 Klikacz Piłeczek</h2>
     <div id="click-count">Punkty: 0</div>
     <div id="prestige-info">⭐ Poziom Prestiżu: 0 (+0% Punktów)</div>
@@ -1130,6 +1173,9 @@
     let kupionePety = JSON.parse(localStorage.getItem('miloszka_pets')) || [];
     let aktywnyPet = localStorage.getItem('miloszka_active_pet') || null;
 
+    // LOGIKA DAILY REWARD
+    let lastDailyTime = parseInt(localStorage.getItem('miloszka_last_daily')) || 0;
+
     function pobierzBonusPetaMoc() {
         return (aktywnyPet === 'dog') ? 2 : 0;
     }
@@ -1167,6 +1213,54 @@
     function pobierzMnoznikPrestizu() {
         return 1 + (prestizLvl * 0.5);
     }
+
+    function odbierzDailyReward() {
+        let teraz = Date.now();
+        let minelo = teraz - lastDailyTime;
+        let cokolwiek24h = 24 * 60 * 60 * 1000;
+
+        if (minelo >= cokolwiek24h) {
+            let baseNagroda = 1000;
+            let finalNagroda = Math.floor(baseNagroda * pobierzMnoznikPrestizu());
+            punkty += finalNagroda;
+            lastDailyTime = teraz;
+            localStorage.setItem('miloszka_last_daily', lastDailyTime);
+            
+            zagrajdzwiek(1200, 'triangle', 0.5);
+            alert(`🎁 Odebrano dzienną nagrodę! Zyskujesz +${finalNagroda.toLocaleString()} pkt!`);
+            aktualizujDailyStatus();
+            sprawdzOsiagniecia();
+            aktualizujWidok();
+        }
+    }
+
+    function aktualizujDailyStatus() {
+        let teraz = Date.now();
+        let minelo = teraz - lastDailyTime;
+        let cokolwiek24h = 24 * 60 * 60 * 1000;
+        let btn = document.getElementById('daily-btn');
+        let status = document.getElementById('daily-status');
+
+        if (minelo >= cokolwiek24h) {
+            btn.disabled = false;
+            btn.innerText = "Odbierz Daily (+1,000 Pkt)";
+            status.innerText = "🎁 Twoja dzienna nagroda jest GOTOWA do odebrania!";
+            status.style.color = "#00e676";
+        } else {
+            btn.disabled = true;
+            let pozostaloMs = cokolwiek24h - minelo;
+            let godz = Math.floor(pozostaloMs / (1000 * 60 * 60));
+            let min = Math.floor((pozostaloMs % (1000 * 60 * 60)) / (1000 * 60));
+            let sek = Math.floor((pozostaloMs % (1000 * 60)) / 1000);
+
+            btn.innerText = `Odebrano (${godz}h ${min}m ${sek}s)`;
+            status.innerText = `Kolejna nagroda dostępna za: ${godz}h ${min}m ${sek}s`;
+            status.style.color = "#ffeb3b";
+        }
+    }
+
+    // Aktualizacja zegara odliczania Daily
+    setInterval(aktualizujDailyStatus, 1000);
 
     function obliczPunktyZaKlik(jestSzala = false, wymusCrit = false) {
         let mnoznikSzalu = jestSzala ? 2 : 1;
@@ -1609,6 +1703,7 @@
         });
 
         renderujPety();
+        aktualizujDailyStatus();
 
         localStorage.setItem('miloszka_punkty', punkty);
         localStorage.setItem('miloszka_moc', mocKlikniecia);
