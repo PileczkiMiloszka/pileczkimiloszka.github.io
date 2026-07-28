@@ -67,6 +67,132 @@
             transform: scale(1.1);
         }
 
+        /* --- PRZYCISK I PANEL USTAWIEŃ --- */
+        .settings-icon-btn {
+            position: fixed;
+            top: 15px;
+            right: 20px;
+            z-index: 10001;
+            font-size: 28px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.2s, background 0.2s, border-color 0.2s;
+            user-select: none;
+        }
+
+        .settings-icon-btn:hover {
+            transform: scale(1.1) rotate(45deg);
+            background: rgba(0, 0, 0, 0.7);
+            border-color: gold;
+        }
+
+        .settings-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.65);
+            backdrop-filter: blur(8px);
+            z-index: 20000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .settings-modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .settings-modal {
+            background: linear-gradient(135deg, rgba(30, 30, 45, 0.95), rgba(15, 15, 25, 0.95));
+            border: 2px solid rgba(255, 215, 0, 0.5);
+            border-radius: 24px;
+            padding: 25px 30px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,215,0,0.1);
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .settings-modal-overlay.active .settings-modal {
+            transform: scale(1);
+        }
+
+        .settings-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .settings-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+            color: gold;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .close-settings-btn {
+            background: transparent;
+            border: none;
+            color: #aaa;
+            font-size: 24px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+
+        .close-settings-btn:hover {
+            color: #ff4d4d;
+        }
+
+        .setting-option {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.07);
+            padding: 15px;
+            border-radius: 16px;
+            text-align: left;
+        }
+
+        .setting-label-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .volume-slider {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            outline: none;
+            cursor: pointer;
+            accent-color: #00e676;
+        }
+
         header {
             background: rgba(0,0,0,0.25);
             padding: 20px;
@@ -737,6 +863,25 @@
     <a href="#fizyka">Plac Fizyki</a>
 </nav>
 
+<!-- PRZYCISK I MODAL USTAWIEŃ -->
+<button class="settings-icon-btn" onclick="otworzUstawienia()" title="Ustawienia">⚙️</button>
+
+<div class="settings-modal-overlay" id="settings-overlay" onclick="zamknijUstawieniaTlo(event)">
+    <div class="settings-modal">
+        <div class="settings-header">
+            <h2>⚙️ Ustawienia Gry</h2>
+            <button class="close-settings-btn" onclick="zamknijUstawienia()">&times;</button>
+        </div>
+        <div class="setting-option">
+            <div class="setting-label-row">
+                <span>🔊 Głośność Strony:</span>
+                <span id="volume-val-text">100%</span>
+            </div>
+            <input type="range" class="volume-slider" id="master-volume-slider" min="0" max="1" step="0.01" value="1" oninput="zmienGlosnosc(this.value)">
+        </div>
+    </div>
+</div>
+
 <header>
     <h1>⚽ pilkimiloszka ⚽</h1>
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
@@ -880,6 +1025,60 @@
 </footer>
 
 <script>
+    // --- OBSŁUGA AUDIO I SYSTEMU GŁOŚNOŚCI ---
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const masterGainNode = audioCtx.createGain();
+    masterGainNode.connect(audioCtx.destination);
+
+    let masterVolume = parseFloat(localStorage.getItem('miloszka_master_volume'));
+    if (isNaN(masterVolume)) masterVolume = 1;
+    masterGainNode.gain.value = masterVolume;
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const slider = document.getElementById('master-volume-slider');
+        if (slider) {
+            slider.value = masterVolume;
+            document.getElementById('volume-val-text').innerText = Math.round(masterVolume * 100) + '%';
+        }
+    });
+
+    function zmienGlosnosc(val) {
+        masterVolume = parseFloat(val);
+        masterGainNode.gain.value = masterVolume;
+        document.getElementById('volume-val-text').innerText = Math.round(masterVolume * 100) + '%';
+        localStorage.setItem('miloszka_master_volume', masterVolume);
+    }
+
+    function otworzUstawienia() {
+        document.getElementById('settings-overlay').classList.add('active');
+        zagrajdzwiek(600, 'sine', 0.05);
+    }
+
+    function zamknijUstawienia() {
+        document.getElementById('settings-overlay').classList.remove('active');
+        zagrajdzwiek(450, 'sine', 0.05);
+    }
+
+    function zamknijUstawieniaTlo(event) {
+        if (event.target.id === 'settings-overlay') {
+            zamknijUstawienia();
+        }
+    }
+
+    function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(masterGainNode);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+    }
+
     let zarobioneZFizyki = 0;
 
     function dodajPunktyZFizyki(ilosc, e = null, text = "") {
@@ -1123,21 +1322,6 @@
 
 
     // --- KLIKACZ I GŁÓWNA LOGIKA ---
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function zagrajdzwiek(freq = 440, type = 'sine', duration = 0.08) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-    }
-
     let punkty = parseFloat(localStorage.getItem('miloszka_punkty')) || 0;
     let mocKlikniecia = parseInt(localStorage.getItem('miloszka_moc')) || 1;
     let kosztUlepszenia = parseInt(localStorage.getItem('miloszka_koszt_moc')) || 10;
