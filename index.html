@@ -507,12 +507,19 @@
             align-items: center;
         }
 
-        .shop-btn:hover {
+        .shop-btn:hover:not(:disabled) {
             background: #00c853;
         }
 
-        .shop-btn:active {
+        .shop-btn:active:not(:disabled) {
             transform: scale(0.98);
+        }
+
+        .shop-btn:disabled {
+            background: gray;
+            color: #ccc;
+            cursor: not-allowed;
+            opacity: 0.6;
         }
 
         .pets-shop-box {
@@ -1614,6 +1621,7 @@
         document.getElementById('frenzy-label').innerText = '🔥 ZŁOTY SZAŁ (PUNKTY x2)! 🔥';
         zagrajdzwiek(1000, 'sawtooth', 0.4);
         odblokujBadge('badge-5');
+        aktualizujWidok();
 
         frenzyInterval = setInterval(() => {
             frenzyProgress -= 2;
@@ -1624,6 +1632,7 @@
                 isFrenzyActive = false;
                 document.body.classList.remove('golden-frenzy');
                 document.getElementById('frenzy-label').innerText = '⚡ Energia Złotego Szału';
+                aktualizujWidok();
             }
         }, 200);
     }
@@ -1650,6 +1659,7 @@
     }
 
     function kupLubEkwipujPeta(petId) {
+        if (isFrenzyActive) return;
         const pet = petyDef.find(p => p.id === petId);
         if (!pet) return;
 
@@ -1691,7 +1701,7 @@
             if (jestEkwipowany) btnText = 'Aktywny';
             else if (jestKupiony) btnText = 'Wybierz';
 
-            let disabledAttr = (!jestKupiony && punkty < pet.cost) ? 'disabled' : '';
+            let disabledAttr = (isFrenzyActive || (!jestKupiony && punkty < pet.cost)) ? 'disabled' : '';
 
             container.innerHTML += `
                 <div class="${cardClass}">
@@ -1713,6 +1723,7 @@
     }
 
     function kupUlepszenie() {
+        if (isFrenzyActive) return;
         if (punkty >= kosztUlepszenia) {
             punkty -= kosztUlepszenia;
             mocKlikniecia += 1;
@@ -1723,6 +1734,7 @@
     }
 
     function kupAutoKlikacz() {
+        if (isFrenzyActive) return;
         if (punkty >= kosztAutoKlikacza) {
             punkty -= kosztAutoKlikacza;
             autoKlikatory += 1;
@@ -1733,6 +1745,7 @@
     }
 
     function kupKrytyka() {
+        if (isFrenzyActive) return;
         if (punkty >= kosztCrit) {
             punkty -= kosztCrit;
             mnoznikCrit += 1;
@@ -1743,6 +1756,7 @@
     }
 
     function kupPettleCzasowa() {
+        if (isFrenzyActive) return;
         if (punkty >= kosztPetli) {
             punkty -= kosztPetli;
             predkoscPetli += 1;
@@ -1753,6 +1767,7 @@
     }
 
     function wykonajPrestiz() {
+        if (isFrenzyActive) return;
         if (punkty >= kosztPrestizu) {
             if (confirm(`Czy chcesz dokonać Prestiżu za ${kosztPrestizu.toLocaleString()} pkt? Resetujesz ulepszenia, ale zyskujesz stały bonus +50% do wszystkich punktów!`)) {
                 prestizLvl += 1;
@@ -1863,7 +1878,7 @@
     let czyKreci = false;
     function zakrecKolem() {
         const KOSZT_KOLA = 750;
-        if (czyKreci || punkty < KOSZT_KOLA) return;
+        if (isFrenzyActive || czyKreci || punkty < KOSZT_KOLA) return;
         
         punkty -= KOSZT_KOLA;
         czyKreci = true;
@@ -1963,10 +1978,16 @@
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
         document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli} pkt`;
 
-        document.getElementById('wheel-btn').disabled = punkty < 750 || czyKreci;
+        // Blokady przycisków w czasie Złotego Szału
+        document.getElementById('btn-upgrade').disabled = isFrenzyActive || (punkty < kosztUlepszenia);
+        document.getElementById('btn-autoclicker').disabled = isFrenzyActive || (punkty < kosztAutoKlikacza);
+        document.getElementById('btn-crit').disabled = isFrenzyActive || (punkty < kosztCrit);
+        document.getElementById('btn-time').disabled = isFrenzyActive || (punkty < kosztPetli);
+
+        document.getElementById('wheel-btn').disabled = isFrenzyActive || punkty < 750 || czyKreci;
         
         document.getElementById('prestige-btn').innerText = `Awanse za ${kosztPrestizu.toLocaleString()} pkt (+1 ⭐)`;
-        document.getElementById('prestige-btn').disabled = punkty < kosztPrestizu;
+        document.getElementById('prestige-btn').disabled = isFrenzyActive || punkty < kosztPrestizu;
 
         Object.keys(skorkiDef).forEach(icon => {
             let btn = document.getElementById(`skin-${icon}`);
