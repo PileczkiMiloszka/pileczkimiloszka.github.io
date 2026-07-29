@@ -1223,13 +1223,20 @@
         </button>
     </div>
 
-    <!-- SEKCJA TRYBU HAZARDOWEGO -->
+    <!-- SKLEP ZWIERZAKÓW -->
+    <div class="pets-shop-box" id="sklep-zoologiczny">
+        <div class="pets-shop-title">🐾 Sklep Zoologiczny</div>
+        <div class="pets-container" id="pets-list">
+        </div>
+    </div>
+
+    <!-- SEKCJA TRYBU HAZARDOWEGO (PRZENIESIONA POD SKLEP ZOOLOGICZNY) -->
     <div class="gamble-box">
         <div style="font-weight: bold; font-size: 1.15em; color: #ffeb3b;">🎲 Tryb Hazardowy: Double or Nothing</div>
         <div style="font-size: 0.85em; margin: 4px 0;">Postaw swoje punkty! 50% szans na podwojenie wygranej, 50% na utratę zakładu.</div>
         <div class="gamble-controls">
             <div class="gamble-input-row">
-                <input type="number" id="gamble-amount-input" class="gamble-input" placeholder="Wpisz punkty..." min="1">
+                <input type="number" id="gamble-amount-input" class="gamble-input" placeholder="Wpisz punkty..." min="100">
             </div>
             <div style="display: flex; justify-content: center; gap: 8px;">
                 <button class="gamble-btn-quick" onclick="ustawWartoscHazardu('min')">Min (100)</button>
@@ -1239,13 +1246,6 @@
             <button class="gamble-action-btn" id="gamble-btn" onclick="zagrajHazard(event)">🎲 Zagraj (Double or Nothing)</button>
         </div>
         <div id="gamble-msg" style="font-size: 0.9em; min-height: 20px; margin-top: 8px; font-weight: bold;"></div>
-    </div>
-
-    <!-- SKLEP ZWIERZAKÓW -->
-    <div class="pets-shop-box" id="sklep-zoologiczny">
-        <div class="pets-shop-title">🐾 Sklep Zoologiczny</div>
-        <div class="pets-container" id="pets-list">
-        </div>
     </div>
 
     <!-- KOŁO FORTUNY -->
@@ -1438,6 +1438,18 @@
             msg.innerText = `🔥 KOD LEGENDA! +${nagroda.toLocaleString()} Pkt!`;
             input.value = '';
             zagrajdzwiek(1500, 'triangle', 0.5);
+            sprawdzOsiagniecia();
+            aktualizujWidok();
+        } else if (kod === 'CODMB') {
+            let nagroda = 500000000;
+            dodajDoWszystkichPunkty(nagroda);
+            uzyteKody.push(kod);
+            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
+            
+            msg.style.color = '#00e676';
+            msg.innerText = `💥 SUPER KOD CODMB! +500M Pkt!`;
+            input.value = '';
+            zagrajdzwiek(1600, 'triangle', 0.6);
             sprawdzOsiagniecia();
             aktualizujWidok();
         } else {
@@ -1800,11 +1812,11 @@
         if (!input) return;
 
         if (tryb === 'min') {
-            input.value = Math.min(100, Math.floor(punkty));
+            input.value = 100;
         } else if (tryb === 'half') {
-            input.value = Math.floor(punkty / 2);
+            input.value = Math.max(100, Math.floor(punkty / 2));
         } else if (tryb === 'max') {
-            input.value = Math.floor(punkty);
+            input.value = Math.max(100, Math.floor(punkty));
         }
     }
 
@@ -1815,9 +1827,9 @@
         const msg = document.getElementById('gamble-msg');
         let stawka = parseInt(input.value);
 
-        if (isNaN(stawka) || stawka <= 0) {
+        if (isNaN(stawka) || stawka < 100) {
             msg.style.color = '#ffeb3b';
-            msg.innerText = '⚠️ Wpisz poprawną kwotę punktów!';
+            msg.innerText = '⚠️ Minimalna stawka wynosi 100 punktów!';
             return;
         }
 
