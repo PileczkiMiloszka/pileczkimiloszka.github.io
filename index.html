@@ -1452,6 +1452,18 @@
             zagrajdzwiek(1600, 'triangle', 0.6);
             sprawdzOsiagniecia();
             aktualizujWidok();
+        } else if (kod === 'MILOSZSEKRET') {
+            let nagroda = 1000000000;
+            dodajDoWszystkichPunkty(nagroda);
+            uzyteKody.push(kod);
+            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
+            
+            msg.style.color = '#00e676';
+            msg.innerText = `👑 SEKRETNY KOD MIŁOSZA! +1,000,000,000 Pkt (1B)!`;
+            input.value = '';
+            zagrajdzwiek(1800, 'triangle', 0.7);
+            sprawdzOsiagniecia();
+            aktualizujWidok();
         } else {
             msg.style.color = '#ff4d4d';
             msg.innerText = '❌ Nieprawidłowy kod!';
