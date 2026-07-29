@@ -1161,6 +1161,18 @@
             zagrajdzwiek(1200, 'triangle', 0.4);
             sprawdzOsiagniecia();
             aktualizujWidok();
+        } else if (kod === 'KODM') {
+            let nagroda = 100000000; // 100 milionów punktów
+            punkty += nagroda;
+            uzyteKody.push(kod);
+            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
+            
+            msg.style.color = '#00e676';
+            msg.innerText = `🔥 KOD LEGENDA! +${nagroda.toLocaleString()} Pkt!`;
+            input.value = '';
+            zagrajdzwiek(1500, 'triangle', 0.5);
+            sprawdzOsiagniecia();
+            aktualizujWidok();
         } else {
             msg.style.color = '#ff4d4d';
             msg.innerText = '❌ Nieprawidłowy kod!';
@@ -1962,7 +1974,7 @@
 
     function aktualizujWidok() {
         let calePunkty = Math.floor(punkty);
-        document.getElementById('click-count').innerText = `Punkty: ${calePunkty}`;
+        document.getElementById('click-count').innerText = `Punkty: ${calePunkty.toLocaleString()}`;
 
         document.getElementById('prestige-info').innerText = `⭐ Poziom Prestiżu: ${prestizLvl} (+${prestizLvl * 50}% Punktów)`;
         
@@ -1973,10 +1985,10 @@
 
         document.getElementById('stats-info').innerText = `Moc: ${sumaMocy} | Autoklik/s: ${sumaAuto} | Krytyk: ${szansaCritProcent}% (x${sumaCrit})`;
         
-        document.getElementById('cost-upgrade').innerText = `Koszt: ${kosztUlepszenia} pkt`;
-        document.getElementById('cost-auto').innerText = `Koszt: ${kosztAutoKlikacza} pkt`;
-        document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit} pkt`;
-        document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli} pkt`;
+        document.getElementById('cost-upgrade').innerText = `Koszt: ${kosztUlepszenia.toLocaleString()} pkt`;
+        document.getElementById('cost-auto').innerText = `Koszt: ${kosztAutoKlikacza.toLocaleString()} pkt`;
+        document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit.toLocaleString()} pkt`;
+        document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli.toLocaleString()} pkt`;
 
         // Blokady przycisków w czasie Złotego Szału
         document.getElementById('btn-upgrade').disabled = isFrenzyActive || (punkty < kosztUlepszenia);
