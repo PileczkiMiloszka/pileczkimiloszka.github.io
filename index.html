@@ -219,7 +219,6 @@
             accent-color: #00e676;
         }
 
-        /* STYLIZACJA SEKCJI STATYSTYK I MOTYWÓW W USTAWIENIACH */
         .stats-toggle-btn, .theme-toggle-btn {
             background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
@@ -336,10 +335,6 @@
         .code-btn:hover {
             background: #00c853;
             transform: scale(1.03);
-        }
-
-        .code-btn:active {
-            transform: scale(0.97);
         }
 
         header {
@@ -726,6 +721,81 @@
             opacity: 0.6;
         }
 
+        /* --- STYL DLA TRYBU HAZARDOWEGO --- */
+        .gamble-box {
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(121, 40, 202, 0.3));
+            border: 2px solid #ff2a6d;
+            border-radius: 20px;
+            padding: 16px;
+            margin: 20px 0;
+            box-shadow: 0 6px 20px rgba(255, 42, 109, 0.2);
+        }
+
+        .gamble-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .gamble-input-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .gamble-input {
+            width: 60%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(0, 0, 0, 0.5);
+            color: gold;
+            font-weight: bold;
+            font-size: 1.1em;
+            text-align: center;
+            outline: none;
+        }
+
+        .gamble-btn-quick {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .gamble-btn-quick:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .gamble-action-btn {
+            background: linear-gradient(135deg, #ff0055, #ff5000);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1.05em;
+            font-weight: bold;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.1s, filter 0.2s;
+        }
+
+        .gamble-action-btn:hover:not(:disabled) {
+            transform: scale(1.03);
+            filter: brightness(1.1);
+        }
+
+        .gamble-action-btn:disabled {
+            background: gray;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
         .wheel-box {
             background: rgba(255,255,255,0.12);
             padding: 18px;
@@ -1054,7 +1124,7 @@
             </div>
         </div>
 
-        <!-- 3. MOTYW STRONY (POD STATYSTYKAMI) -->
+        <!-- 3. MOTYW STRONY -->
         <div class="setting-option">
             <div class="setting-label-row">
                 <span>🎨 Wygląd i Motyw:</span>
@@ -1071,7 +1141,7 @@
             </div>
         </div>
 
-        <!-- 4. KODY PROMOCYJNE (NA SAMYM DOLE USTAWIEŃ) -->
+        <!-- 4. KODY PROMOCYJNE -->
         <div class="setting-option">
             <div class="setting-label-row">
                 <span>🎁 Kod Promocyjny:</span>
@@ -1151,6 +1221,24 @@
         <button class="shop-btn" id="btn-time" onclick="kupPettleCzasowa()">
             <span>⏳ Pętla Czasu (Szybsze Autokliki)</span> <span id="cost-time">Koszt: 300 pkt</span>
         </button>
+    </div>
+
+    <!-- SEKCJA TRYBU HAZARDOWEGO -->
+    <div class="gamble-box">
+        <div style="font-weight: bold; font-size: 1.15em; color: #ffeb3b;">🎲 Tryb Hazardowy: Double or Nothing</div>
+        <div style="font-size: 0.85em; margin: 4px 0;">Postaw swoje punkty! 50% szans na podwojenie wygranej, 50% na utratę zakładu.</div>
+        <div class="gamble-controls">
+            <div class="gamble-input-row">
+                <input type="number" id="gamble-amount-input" class="gamble-input" placeholder="Wpisz punkty..." min="1">
+            </div>
+            <div style="display: flex; justify-content: center; gap: 8px;">
+                <button class="gamble-btn-quick" onclick="ustawWartoscHazardu('min')">Min (100)</button>
+                <button class="gamble-btn-quick" onclick="ustawWartoscHazardu('half')">50% Salda</button>
+                <button class="gamble-btn-quick" onclick="ustawWartoscHazardu('max')">Max (All-in)</button>
+            </div>
+            <button class="gamble-action-btn" id="gamble-btn" onclick="zagrajHazard(event)">🎲 Zagraj (Double or Nothing)</button>
+        </div>
+        <div id="gamble-msg" style="font-size: 0.9em; min-height: 20px; margin-top: 8px; font-weight: bold;"></div>
     </div>
 
     <!-- SKLEP ZWIERZAKÓW -->
@@ -1291,7 +1379,6 @@
         aktywneTlo = nazwaMotywu;
         localStorage.setItem('miloszka_theme', nazwaMotywu);
 
-        // Aktualizacja obramowania przycisków w menu motywów
         const motywy = ['theme-default', 'theme-dark', 'theme-ocean', 'theme-neon'];
         motywy.forEach(m => {
             const btnKey = m.replace('theme-', '');
@@ -1342,7 +1429,7 @@
             sprawdzOsiagniecia();
             aktualizujWidok();
         } else if (kod === 'KODM') {
-            let nagroda = 100000000; // 100 milionów punktów
+            let nagroda = 100000000;
             dodajDoWszystkichPunkty(nagroda);
             uzyteKody.push(kod);
             localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
@@ -1640,7 +1727,7 @@
     let comboMultiplier = 1;
     let comboTimer = null;
 
-    // --- MIANOWANE STATYSTYKI GRAJĄCEGO ---
+    // STATYSTYKI
     let statTotalClicks = parseInt(localStorage.getItem('miloszka_stat_clicks')) || 0;
     let statTotalEarned = parseFloat(localStorage.getItem('miloszka_stat_earned')) || 0;
     let statMaxCombo = parseInt(localStorage.getItem('miloszka_stat_max_combo')) || 1;
@@ -1705,6 +1792,63 @@
 
     function pobierzMnoznikPrestizu() {
         return 1 + (prestizLvl * 0.5);
+    }
+
+    // --- LOGIKA TRYBU HAZARDOWEGO (DOUBLE OR NOTHING) ---
+    function ustawWartoscHazardu(tryb) {
+        const input = document.getElementById('gamble-amount-input');
+        if (!input) return;
+
+        if (tryb === 'min') {
+            input.value = Math.min(100, Math.floor(punkty));
+        } else if (tryb === 'half') {
+            input.value = Math.floor(punkty / 2);
+        } else if (tryb === 'max') {
+            input.value = Math.floor(punkty);
+        }
+    }
+
+    function zagrajHazard(event) {
+        if (isFrenzyActive) return;
+
+        const input = document.getElementById('gamble-amount-input');
+        const msg = document.getElementById('gamble-msg');
+        let stawka = parseInt(input.value);
+
+        if (isNaN(stawka) || stawka <= 0) {
+            msg.style.color = '#ffeb3b';
+            msg.innerText = '⚠️ Wpisz poprawną kwotę punktów!';
+            return;
+        }
+
+        if (stawka > punkty) {
+            msg.style.color = '#ff4d4d';
+            msg.innerText = '❌ Nie masz tylu punktów!';
+            return;
+        }
+
+        // Zabieramy stawkę
+        punkty -= stawka;
+
+        let czyWygrana = Math.random() < 0.5;
+
+        if (czyWygrana) {
+            let wygrana = stawka * 2;
+            dodajDoWszystkichPunkty(wygrana);
+            
+            msg.style.color = '#00e676';
+            msg.innerText = `🎉 WYGRANA! Podwojono! +${wygrana.toLocaleString()} Pkt!`;
+            tworzLatajacyTekst(event, `🔥 +${wygrana.toLocaleString()} PKT!`, true);
+            zagrajdzwiek(1200, 'triangle', 0.35);
+        } else {
+            msg.style.color = '#ff4d4d';
+            msg.innerText = `💥 PRZEGRANA! Straciłeś ${stawka.toLocaleString()} Pkt!`;
+            tworzLatajacyTekst(event, `💀 -${stawka.toLocaleString()}`, false);
+            zagrajdzwiek(200, 'sawtooth', 0.3);
+        }
+
+        sprawdzOsiagniecia();
+        aktualizujWidok();
     }
 
     function odbierzDailyReward() {
@@ -2202,6 +2346,10 @@
         document.getElementById('cost-auto').innerText = `Koszt: ${kosztAutoKlikacza.toLocaleString()} pkt`;
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit.toLocaleString()} pkt`;
         document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli.toLocaleString()} pkt`;
+
+        // Ograniczenie hazardu podczas szału
+        const gambleBtn = document.getElementById('gamble-btn');
+        if (gambleBtn) gambleBtn.disabled = isFrenzyActive;
 
         // ODŚWIEŻENIE PANELU STATYSTYK W USTAWIENIACH
         document.getElementById('stat-total-clicks').innerText = statTotalClicks.toLocaleString();
