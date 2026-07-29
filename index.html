@@ -192,6 +192,49 @@
             accent-color: #00e676;
         }
 
+        .code-input-container {
+            display: flex;
+            gap: 8px;
+        }
+
+        .code-input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            font-size: 0.9em;
+            font-weight: bold;
+            outline: none;
+            text-transform: uppercase;
+            transition: border-color 0.2s;
+        }
+
+        .code-input:focus {
+            border-color: gold;
+        }
+
+        .code-btn {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: none;
+            background: #00e676;
+            color: #111;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .code-btn:hover {
+            background: #00c853;
+            transform: scale(1.03);
+        }
+
+        .code-btn:active {
+            transform: scale(0.97);
+        }
+
         header {
             background: rgba(0,0,0,0.25);
             padding: 20px;
@@ -878,6 +921,18 @@
             </div>
             <input type="range" class="volume-slider" id="master-volume-slider" min="0" max="1" step="0.01" value="1" oninput="zmienGlosnosc(this.value)">
         </div>
+
+        <!-- SEKCJA KODÓW PROMOCYJNYCH -->
+        <div class="setting-option" style="margin-top: 12px;">
+            <div class="setting-label-row">
+                <span>🎁 Kod Promocyjny:</span>
+            </div>
+            <div class="code-input-container">
+                <input type="text" id="promo-code-input" class="code-input" placeholder="Wprowadź kod..." onkeypress="if(event.key==='Enter') realizujKod()">
+                <button class="code-btn" onclick="realizujKod()">Użyj</button>
+            </div>
+            <div id="promo-code-msg" style="font-size: 0.82em; min-height: 18px; margin-top: 2px; font-weight: bold;"></div>
+        </div>
     </div>
 </div>
 
@@ -986,7 +1041,7 @@
             <span class="badge" id="badge-4" title="Jak zdobyć: Zdobądź 10,000 punktów!">👑 Król Piłeczek (10k)</span>
             <span class="badge" id="badge-5" title="Jak zdobyć: Aktywuj tryb Złotego Szału, klikając w kółko!">💥 Super Złoty Szał</span>
             <span class="badge" id="badge-6" title="Jak zdobyć: Kliknij w latający po ekranie prezent!">🎁 Łowca Prezentów</span>
-            <span class="badge" id="badge-7" title="Jak zdobyć: Kup przynajmniej jedno zwierzątko w Sklepie Zoologicznym!">🐶 Przyjaciel Zwierząt</span>
+            <span class="badge" id="badge-7" title="Jak zdobyć: Kup przynajmniej jedno zwierzątko w Sklepie Zoologcznym!">🐶 Przyjaciel Zwierząt</span>
         </div>
     </div>
 
@@ -1055,12 +1110,53 @@
 
     function zamknijUstawienia() {
         document.getElementById('settings-overlay').classList.remove('active');
+        document.getElementById('promo-code-msg').innerText = '';
         zagrajdzwiek(450, 'sine', 0.05);
     }
 
     function zamknijUstawieniaTlo(event) {
         if (event.target.id === 'settings-overlay') {
             zamknijUstawienia();
+        }
+    }
+
+    // --- LOGIKA KODÓW PROMOCYJNYCH ---
+    let uzyteKody = JSON.parse(localStorage.getItem('miloszka_used_codes')) || [];
+
+    function realizujKod() {
+        const input = document.getElementById('promo-code-input');
+        const msg = document.getElementById('promo-code-msg');
+        if (!input || !msg) return;
+
+        const kod = input.value.trim().toUpperCase();
+
+        if (!kod) {
+            msg.style.color = '#ffeb3b';
+            msg.innerText = '⚠️ Wpisz kod!';
+            return;
+        }
+
+        if (uzyteKody.includes(kod)) {
+            msg.style.color = '#ff4d4d';
+            msg.innerText = '❌ Ten kod został już wykorzystany!';
+            return;
+        }
+
+        if (kod === 'OGPIŁKA') {
+            let nagroda = 100000;
+            punkty += nagroda;
+            uzyteKody.push(kod);
+            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
+            
+            msg.style.color = '#00e676';
+            msg.innerText = `🎉 Aktywowano kod! +${nagroda.toLocaleString()} Pkt!`;
+            input.value = '';
+            zagrajdzwiek(1200, 'triangle', 0.4);
+            sprawdzOsiagniecia();
+            aktualizujWidok();
+        } else {
+            msg.style.color = '#ff4d4d';
+            msg.innerText = '❌ Nieprawidłowy kod!';
         }
     }
 
