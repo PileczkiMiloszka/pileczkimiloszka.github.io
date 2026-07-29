@@ -31,6 +31,20 @@
             transition: background 0.5s;
         }
 
+        /* --- MOTYWY TŁA STRONY --- */
+        body.theme-default {
+            background: linear-gradient(135deg, #ffb6c1, #87cefa) !important;
+        }
+        body.theme-dark {
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364) !important;
+        }
+        body.theme-ocean {
+            background: linear-gradient(135deg, #00c6ff, #0072ff) !important;
+        }
+        body.theme-neon {
+            background: linear-gradient(135deg, #11998e, #38ef7d) !important;
+        }
+
         .shake {
             animation: shakeAnim 0.2s ease-in-out;
         }
@@ -205,8 +219,8 @@
             accent-color: #00e676;
         }
 
-        /* STYLIZACJA SEKCJI STATYSTYK W USTAWIENIACH */
-        .stats-toggle-btn {
+        /* STYLIZACJA SEKCJI STATYSTYK I MOTYWÓW W USTAWIENIACH */
+        .stats-toggle-btn, .theme-toggle-btn {
             background: linear-gradient(135deg, #00c6ff, #0072ff);
             color: white;
             border: none;
@@ -218,24 +232,60 @@
             transition: transform 0.1s, filter 0.2s;
         }
 
-        .stats-toggle-btn:hover {
+        .theme-toggle-btn {
+            background: linear-gradient(135deg, #ff007f, #7928ca);
+        }
+
+        .stats-toggle-btn:hover, .theme-toggle-btn:hover {
             filter: brightness(1.1);
             transform: scale(1.02);
         }
 
-        .stats-details {
+        .stats-details, .theme-details {
             display: none;
             background: rgba(0, 0, 0, 0.3);
             border-radius: 10px;
-            padding: 10px;
+            padding: 12px;
             margin-top: 8px;
             font-size: 0.88em;
             line-height: 1.6;
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .stats-details.active {
+        .stats-details.active, .theme-details.active {
             display: block;
+        }
+
+        .theme-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-top: 5px;
+        }
+
+        .theme-card-btn {
+            padding: 10px 8px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: transform 0.1s, border-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .theme-card-btn:hover {
+            transform: scale(1.03);
+            border-color: white;
+        }
+
+        .theme-card-btn.active {
+            border-color: gold;
+            box-shadow: 0 0 10px gold;
         }
 
         .stats-row {
@@ -987,7 +1037,7 @@
             <input type="range" class="volume-slider" id="master-volume-slider" min="0" max="1" step="0.01" value="1" oninput="zmienGlosnosc(this.value)">
         </div>
 
-        <!-- 2. STATYSTYKI (POD GŁOŚNOŚCIĄ) -->
+        <!-- 2. STATYSTYKI -->
         <div class="setting-option">
             <div class="setting-label-row">
                 <span>📊 Statystyki Gry:</span>
@@ -1004,7 +1054,24 @@
             </div>
         </div>
 
-        <!-- 3. KODY PROMOCYJNE (NA SAMYM DOLE USTAWIEŃ) -->
+        <!-- 3. MOTYW STRONY (POD STATYSTYKAMI) -->
+        <div class="setting-option">
+            <div class="setting-label-row">
+                <span>🎨 Wygląd i Motyw:</span>
+            </div>
+            <button class="theme-toggle-btn" onclick="toggleThemes()">Zmień Motyw Tła 🎨</button>
+            <div class="theme-details" id="theme-details-box">
+                <div style="font-size: 0.85em; margin-bottom: 8px; text-align: center;">Wybierz kolor przewodni gry:</div>
+                <div class="theme-grid">
+                    <button class="theme-card-btn" id="theme-btn-default" style="background: linear-gradient(135deg, #ffb6c1, #87cefa);" onclick="ustawMotyw('theme-default')">🌸 Różowy</button>
+                    <button class="theme-card-btn" id="theme-btn-dark" style="background: linear-gradient(135deg, #0f2027, #2c5364);" onclick="ustawMotyw('theme-dark')">🌙 Ciemny</button>
+                    <button class="theme-card-btn" id="theme-btn-ocean" style="background: linear-gradient(135deg, #00c6ff, #0072ff);" onclick="ustawMotyw('theme-ocean')">🌊 Morski</button>
+                    <button class="theme-card-btn" id="theme-btn-neon" style="background: linear-gradient(135deg, #11998e, #38ef7d);" onclick="ustawMotyw('theme-neon')">⚡ Neon</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. KODY PROMOCYJNE (NA SAMYM DOLE USTAWIEŃ) -->
         <div class="setting-option">
             <div class="setting-label-row">
                 <span>🎁 Kod Promocyjny:</span>
@@ -1170,12 +1237,16 @@
     if (isNaN(masterVolume)) masterVolume = 1;
     masterGainNode.gain.value = masterVolume;
 
+    // --- MOTYWY TŁA ---
+    let aktywneTlo = localStorage.getItem('miloszka_theme') || 'theme-default';
+
     document.addEventListener("DOMContentLoaded", () => {
         const slider = document.getElementById('master-volume-slider');
         if (slider) {
             slider.value = masterVolume;
             document.getElementById('volume-val-text').innerText = Math.round(masterVolume * 100) + '%';
         }
+        ustawMotyw(aktywneTlo, false);
     });
 
     function zmienGlosnosc(val) {
@@ -1206,6 +1277,34 @@
         const box = document.getElementById('stats-details-box');
         box.classList.toggle('active');
         zagrajdzwiek(550, 'sine', 0.05);
+    }
+
+    function toggleThemes() {
+        const box = document.getElementById('theme-details-box');
+        box.classList.toggle('active');
+        zagrajdzwiek(550, 'sine', 0.05);
+    }
+
+    function ustawMotyw(nazwaMotywu, zagrajAudio = true) {
+        document.body.classList.remove('theme-default', 'theme-dark', 'theme-ocean', 'theme-neon');
+        document.body.classList.add(nazwaMotywu);
+        aktywneTlo = nazwaMotywu;
+        localStorage.setItem('miloszka_theme', nazwaMotywu);
+
+        // Aktualizacja obramowania przycisków w menu motywów
+        const motywy = ['theme-default', 'theme-dark', 'theme-ocean', 'theme-neon'];
+        motywy.forEach(m => {
+            const btnKey = m.replace('theme-', '');
+            const btn = document.getElementById(`theme-btn-${btnKey}`);
+            if (btn) {
+                if (m === nazwaMotywu) btn.classList.add('active');
+                else btn.classList.remove('active');
+            }
+        });
+
+        if (zagrajAudio) {
+            zagrajdzwiek(700, 'sine', 0.08);
+        }
     }
 
     // --- LOGIKA KODÓW PROMOCYJNYCH ---
