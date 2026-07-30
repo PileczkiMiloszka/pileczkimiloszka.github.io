@@ -1217,11 +1217,7 @@
             </div>
             <div class="code-input-container">
                 <input type="text" id="player-nickname" class="code-input" placeholder="Twój Nick..." maxlength="15">
-                <input type="password" id="player-pin" class="code-input" placeholder="Twój PIN (do ochrony nicku)..." maxlength="10">
-                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:6px 10px; border-radius:8px;">
-                    <span id="captcha-question" style="font-weight:bold; font-size:0.85em; color:gold;"></span>
-                    <input type="number" id="captcha-answer" class="code-input" placeholder="Wynik" style="width:70px; padding:5px;">
-                </div>
+                <input type="text" id="player-pin" class="code-input" placeholder="Twój PIN (do ochrony nicku)..." maxlength="10">
                 <button class="code-btn" onclick="zapiszDoTopki()">Zapisz Wynik</button>
             </div>
             <div id="leaderboard-msg" style="font-size: 0.82em; min-height: 18px; margin-top: 4px; font-weight: bold;"></div>
@@ -1435,18 +1431,8 @@
         }
     }
 
-    /* --- OBSŁUGA RANKINGU (TOPKA) & CAPTCHA & SECURITY PIN --- */
+    /* --- OBSŁUGA RANKINGU (TOPKA) & SECURITY PIN --- */
     let domyslnaTopka = [];
-
-    let captchaA = 0;
-    let captchaB = 0;
-
-    function generujCaptcha() {
-        captchaA = Math.floor(Math.random() * 9) + 1;
-        captchaB = Math.floor(Math.random() * 9) + 1;
-        document.getElementById('captcha-question').innerText = `Ile to: ${captchaA} + ${captchaB}?`;
-        document.getElementById('captcha-answer').value = '';
-    }
 
     function pobierzTopke() {
         let saved = localStorage.getItem('miloszka_leaderboard');
@@ -1455,7 +1441,6 @@
 
     function otworzTopke() {
         renderujTopke();
-        generujCaptcha();
         document.getElementById('leaderboard-overlay').classList.add('active');
         zagrajdzwiek(700, 'sine', 0.05);
     }
@@ -1502,13 +1487,11 @@
     function zapiszDoTopki() {
         let nickInput = document.getElementById('player-nickname');
         let pinInput = document.getElementById('player-pin');
-        let captchaInput = document.getElementById('captcha-answer');
         let msg = document.getElementById('leaderboard-msg');
 
         let rawNick = nickInput.value.trim();
         let nick = sanitizujTekst(rawNick);
         let pin = pinInput.value.trim();
-        let ans = parseInt(captchaInput.value);
 
         if (!nick) {
             msg.style.color = '#ffeb3b';
@@ -1522,14 +1505,6 @@
             return;
         }
 
-        // Sprawdzanie Captcha (Ochrona przed botami)
-        if (isNaN(ans) || ans !== (captchaA + captchaB)) {
-            msg.style.color = '#ff4d4d';
-            msg.innerText = '❌ Błędny wynik działania (Captcha)! Wynik zmieniony.';
-            generujCaptcha();
-            return;
-        }
-
         let topka = pobierzTopke();
         let idx = topka.findIndex(item => item.nick.toLowerCase() === nick.toLowerCase());
 
@@ -1538,7 +1513,6 @@
             if (topka[idx].pin && topka[idx].pin !== pin) {
                 msg.style.color = '#ff4d4d';
                 msg.innerText = '❌ Ten nick należy do kogoś innego lub zły PIN!';
-                generujCaptcha();
                 return;
             }
 
@@ -1550,7 +1524,6 @@
             } else {
                 msg.style.color = '#ffeb3b';
                 msg.innerText = 'ℹ️ Masz już lepszy lub taki sam wynik w topce!';
-                generujCaptcha();
                 return;
             }
         } else {
@@ -1562,7 +1535,6 @@
 
         localStorage.setItem('miloszka_leaderboard', JSON.stringify(topka));
         renderujTopke();
-        generujCaptcha();
         zagrajdzwiek(1100, 'triangle', 0.2);
     }
 
