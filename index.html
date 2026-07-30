@@ -876,7 +876,6 @@
         #wheel-canvas {
             border-radius: 50%;
             box-shadow: 0 6px 15px rgba(0,0,0,0.4), inset 0 0 8px rgba(0,0,0,0.3);
-            transition: transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99);
         }
 
         .wheel-btn {
@@ -1990,6 +1989,101 @@
         return 1 + (prestizLvl * 0.5);
     }
 
+    // --- NAPRAWIONA LOGIKA KOŁA FORTUNY ---
+    const nagrodyObj = [
+        { label: '500 Pkt', type: 'pts', val: 500 },
+        { label: '1000 Pkt', type: 'pts', val: 1000 },
+        { label: 'Moc +5', type: 'moc', val: 5 },
+        { label: '250 Pkt', type: 'pts', val: 250 },
+        { label: 'Autoklik +3', type: 'auto', val: 3 },
+        { label: 'JACKPOT!', type: 'pts', val: 5000 }
+    ];
+    
+    const koloryKola = ['#ff5252', '#7c4dff', '#00e676', '#ffb300', '#ff6d00', '#00b0ff'];
+    let aktualnyKatKola = 0;
+
+    function rysujKolo() {
+        let kat = (Math.PI * 2) / nagrodyObj.length;
+        wCtx.clearRect(0,0,190,190);
+        for (let i = 0; i < nagrodyObj.length; i++) {
+            wCtx.beginPath();
+            wCtx.fillStyle = koloryKola[i];
+            wCtx.moveTo(95, 95);
+            wCtx.arc(95, 95, 95, i * kat, (i + 1) * kat);
+            wCtx.fill();
+            wCtx.lineWidth = 2;
+            wCtx.strokeStyle = 'rgba(255,255,255,0.4)';
+            wCtx.stroke();
+
+            wCtx.save();
+            wCtx.translate(95, 95);
+            wCtx.rotate(i * kat + kat / 2);
+            wCtx.fillStyle = '#ffffff';
+            wCtx.font = 'bold 11px sans-serif';
+            wCtx.textAlign = 'center';
+            wCtx.textBaseline = 'middle';
+            wCtx.shadowColor = "rgba(0,0,0,0.6)";
+            wCtx.shadowBlur = 4;
+            wCtx.fillText(nagrodyObj[i].label, 58, 0);
+            wCtx.restore();
+        }
+    }
+    rysujKolo();
+
+    let czyKreci = false;
+    function zakrecKolem() {
+        const KOSZT_KOLA = 750;
+        if (isFrenzyActive || czyKreci || punkty < KOSZT_KOLA) return;
+        
+        punkty -= KOSZT_KOLA;
+        czyKreci = true;
+        document.getElementById('wheel-btn').disabled = true;
+
+        statWheelSpins++;
+        localStorage.setItem('miloszka_stat_spins', statWheelSpins);
+
+        let selectedIndex = Math.floor(Math.random() * nagrodyObj.length);
+        let segmentAngle = 360 / nagrodyObj.length;
+        
+        // Obliczamy kąt tak, aby wylosowany indeks znalazł się na górze (wskaźnik na 12 godzinie, czyli 270 stopni w układzie współrzędnych obrotu)
+        let targetSegmentCenter = selectedIndex * segmentAngle + (segmentAngle / 2);
+        let extraSpins = (5 + Math.floor(Math.random() * 3)) * 360;
+        
+        // Nowy całkowity kąt obrotu bazujący na aktualnym, aby koło kręciło się płynnie dalej w tę samą stronę
+        let targetAngle = aktualnyKatKola + extraSpins + (270 - targetSegmentCenter - (aktualnyKatKola % 360));
+        aktualnyKatKola = targetAngle;
+
+        let tickInterval = setInterval(() => {
+            zagrajdzwiek(600, 'triangle', 0.02);
+        }, 150);
+
+        wCanvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99)';
+        wCanvas.style.transform = `rotate(${aktualnyKatKola}deg)`;
+
+        setTimeout(() => {
+            clearInterval(tickInterval);
+            czyKreci = false;
+            let nagroda = nagrodyObj[selectedIndex];
+            
+            if (nagroda.type === 'pts') {
+                let wygrana = Math.floor(nagroda.val * pobierzMnoznikPrestizu());
+                dodajDoWszystkichPunkty(wygrana);
+                zagrajdzwiek(1200, 'sine', 0.3);
+                alert(`🎉 Wygrałeś ${wygrana} punktów!`);
+            } else if (nagroda.type === 'moc') {
+                mocKlikniecia += nagroda.val;
+                zagrajdzwiek(1200, 'sine', 0.3);
+                alert(`⚡ BUFF! Twoja Moc kliknięcia wzrosła o +${nagroda.val}!`);
+            } else if (nagroda.type === 'auto') {
+                autoKlikatory += nagroda.val;
+                zagrajdzwiek(1200, 'sine', 0.3);
+                alert(`🤖 BUFF! Zyskujesz +${nagroda.val} Autoklikaczy!`);
+            }
+
+            aktualizujWidok();
+        }, 4000);
+    }
+
     // --- LOGIKA TRYBU HAZARDOWEGO (DOUBLE OR NOTHING) ---
     function ustawWartoscHazardu(tryb) {
         const input = document.getElementById('gamble-amount-input');
@@ -2392,104 +2486,6 @@
     setInterval(() => {
         if (Math.random() < 0.4) spawnowajPrezent();
     }, 20000);
-
-    const wCanvas = document.getElementById('wheel-canvas');
-    const wCtx = wCanvas.getContext('2d');
-    
-    const nagrodyObj = [
-        { label: '500 Pkt', type: 'pts', val: 500 },
-        { label: '1000 Pkt', type: 'pts', val: 1000 },
-        { label: 'Moc +5', type: 'moc', val: 5 },
-        { label: '250 Pkt', type: 'pts', val: 250 },
-        { label: 'Autoklik +3', type: 'auto', val: 3 },
-        { label: 'JACKPOT!', type: 'pts', val: 5000 }
-    ];
-    
-    const koloryKola = ['#ff5252', '#7c4dff', '#00e676', '#ffb300', '#ff6d00', '#00b0ff'];
-
-    function rysujKolo() {
-        let kat = (Math.PI * 2) / nagrodyObj.length;
-        wCtx.clearRect(0,0,190,190);
-        for (let i = 0; i < nagrodyObj.length; i++) {
-            wCtx.beginPath();
-            wCtx.fillStyle = koloryKola[i];
-            wCtx.moveTo(95, 95);
-            wCtx.arc(95, 95, 95, i * kat, (i + 1) * kat);
-            wCtx.fill();
-            wCtx.lineWidth = 2;
-            wCtx.strokeStyle = 'rgba(255,255,255,0.4)';
-            wCtx.stroke();
-
-            wCtx.save();
-            wCtx.translate(95, 95);
-            wCtx.rotate(i * kat + kat / 2);
-            wCtx.fillStyle = '#ffffff';
-            wCtx.font = 'bold 11px sans-serif';
-            wCtx.textAlign = 'center';
-            wCtx.textBaseline = 'middle';
-            wCtx.shadowColor = "rgba(0,0,0,0.6)";
-            wCtx.shadowBlur = 4;
-            wCtx.fillText(nagrodyObj[i].label, 58, 0);
-            wCtx.restore();
-        }
-    }
-    rysujKolo();
-
-    let czyKreci = false;
-    function zakrecKolem() {
-        const KOSZT_KOLA = 750;
-        if (isFrenzyActive || czyKreci || punkty < KOSZT_KOLA) return;
-        
-        punkty -= KOSZT_KOLA;
-        czyKreci = true;
-        document.getElementById('wheel-btn').disabled = true;
-
-        statWheelSpins++;
-        localStorage.setItem('miloszka_stat_spins', statWheelSpins);
-
-        let selectedIndex = Math.floor(Math.random() * nagrodyObj.length);
-        let segmentAngle = 360 / nagrodyObj.length;
-        
-        let targetSegmentCenter = selectedIndex * segmentAngle + (segmentAngle / 2);
-        let desiredAngle = 270 - targetSegmentCenter;
-        
-        let fullSpins = (4 + Math.floor(Math.random() * 3)) * 360;
-        let totalRotation = fullSpins + desiredAngle;
-
-        let tickInterval = setInterval(() => {
-            zagrajdzwiek(600, 'triangle', 0.02);
-        }, 150);
-
-        wCanvas.style.transition = 'transform 4s cubic-bezier(0.15, 0.99, 0.15, 0.99)';
-        wCanvas.style.transform = `rotate(${totalRotation}deg)`;
-
-        setTimeout(() => {
-            clearInterval(tickInterval);
-            czyKreci = false;
-            let nagroda = nagrodyObj[selectedIndex];
-            
-            if (nagroda.type === 'pts') {
-                let wygrana = Math.floor(nagroda.val * pobierzMnoznikPrestizu());
-                dodajDoWszystkichPunkty(wygrana);
-                zagrajdzwiek(1200, 'sine', 0.3);
-                alert(`🎉 Wygrałeś ${wygrana} punktów!`);
-            } else if (nagroda.type === 'moc') {
-                mocKlikniecia += nagroda.val;
-                zagrajdzwiek(1200, 'sine', 0.3);
-                alert(`⚡ BUFF! Twoja Moc kliknięcia wzrosła o +${nagroda.val}!`);
-            } else if (nagroda.type === 'auto') {
-                autoKlikatory += nagroda.val;
-                zagrajdzwiek(1200, 'sine', 0.3);
-                alert(`🤖 BUFF! Zyskujesz +${nagroda.val} Autoklikaczy!`);
-            }
-
-            wCanvas.style.transition = 'none';
-            let normalizedRotation = totalRotation % 360;
-            wCanvas.style.transform = `rotate(${normalizedRotation}deg)`;
-
-            aktualizujWidok();
-        }, 4000);
-    }
 
     // INTERWAŁ AUTOKLIKA
     setInterval(() => {
