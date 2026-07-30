@@ -1431,9 +1431,7 @@
 
     /* --- OBSŁUGA RANKINGU (TOPKA) --- */
     let domyslnaTopka = [
-        { nick: 'Miłosz', score: 1000000000 },
-        { nick: 'PiłeczkaPRO', score: 50000000 },
-        { nick: 'Klikacz2026', score: 10000000 }
+        { nick: 'nigBall', score: 146293 }
     ];
 
     function pobierzTopke() {
@@ -1551,7 +1549,8 @@
     }
 
     // --- LOGIKA KODÓW PROMOCYJNYCH ---
-    let uzyteKody = JSON.parse(localStorage.getItem('miloszka_used_codes')) || [];
+    let uzyteKody = [];
+    localStorage.removeItem('miloszka_used_codes');
 
     function realizujKod() {
         const input = document.getElementById('promo-code-input');
