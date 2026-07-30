@@ -337,11 +337,12 @@
 
         .code-input-container {
             display: flex;
+            flex-direction: column;
             gap: 8px;
         }
 
         .code-input {
-            flex: 1;
+            width: 100%;
             padding: 10px 12px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -1216,7 +1217,12 @@
             </div>
             <div class="code-input-container">
                 <input type="text" id="player-nickname" class="code-input" placeholder="Twój Nick..." maxlength="15">
-                <button class="code-btn" onclick="zapiszDoTopki()">Zapisz</button>
+                <input type="password" id="player-pin" class="code-input" placeholder="Twój PIN (do ochrony nicku)..." maxlength="10">
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:6px 10px; border-radius:8px;">
+                    <span id="captcha-question" style="font-weight:bold; font-size:0.85em; color:gold;"></span>
+                    <input type="number" id="captcha-answer" class="code-input" placeholder="Wynik" style="width:70px; padding:5px;">
+                </div>
+                <button class="code-btn" onclick="zapiszDoTopki()">Zapisz Wynik</button>
             </div>
             <div id="leaderboard-msg" style="font-size: 0.82em; min-height: 18px; margin-top: 4px; font-weight: bold;"></div>
         </div>
@@ -1298,7 +1304,7 @@
         </div>
     </div>
 
-    <!-- SEKCJA TRYBU HAZARDOWEGO (PRZENIESIONA POD SKLEP ZOOLOGICZNY) -->
+    <!-- SEKCJA TRYBU HAZARDOWEGO -->
     <div class="gamble-box">
         <div style="font-weight: bold; font-size: 1.15em; color: #ffeb3b;">🎲 Tryb Hazardowy: Double or Nothing</div>
         <div style="font-size: 0.85em; margin: 4px 0;">Postaw swoje punkty! 50% szans na podwojenie wygranej, 50% na utratę zakładu.</div>
@@ -1429,10 +1435,20 @@
         }
     }
 
-    /* --- OBSŁUGA RANKINGU (TOPKA) --- */
+    /* --- OBSŁUGA RANKINGU (TOPKA) & CAPTCHA & SECURITY PIN --- */
     let domyslnaTopka = [
-        { nick: 'nigBall', score: 146293 }
+        { nick: 'nigBall', score: 146293, pin: '1234' }
     ];
+
+    let captchaA = 0;
+    let captchaB = 0;
+
+    function generujCaptcha() {
+        captchaA = Math.floor(Math.random() * 9) + 1;
+        captchaB = Math.floor(Math.random() * 9) + 1;
+        document.getElementById('captcha-question').innerText = `Ile to: ${captchaA} + ${captchaB}?`;
+        document.getElementById('captcha-answer').value = '';
+    }
 
     function pobierzTopke() {
         let saved = localStorage.getItem('miloszka_leaderboard');
@@ -1441,6 +1457,7 @@
 
     function otworzTopke() {
         renderujTopke();
+        generujCaptcha();
         document.getElementById('leaderboard-overlay').classList.add('active');
         zagrajdzwiek(700, 'sine', 0.05);
     }
@@ -1455,6 +1472,10 @@
         if (event.target.id === 'leaderboard-overlay') {
             zamknijTopke();
         }
+    }
+
+    function sanitizujTekst(str) {
+        return str.replace(/[&<>"']/g, "");
     }
 
     function renderujTopke() {
@@ -1473,7 +1494,7 @@
 
             listContainer.innerHTML += `
                 <div class="leaderboard-item ${classRank}">
-                    <span>${medal}${gracz.nick}</span>
+                    <span>${medal}${sanitizujTekst(gracz.nick)}</span>
                     <span>${Math.floor(gracz.score).toLocaleString()} pkt</span>
                 </div>
             `;
@@ -1481,9 +1502,15 @@
     }
 
     function zapiszDoTopki() {
-        let input = document.getElementById('player-nickname');
+        let nickInput = document.getElementById('player-nickname');
+        let pinInput = document.getElementById('player-pin');
+        let captchaInput = document.getElementById('captcha-answer');
         let msg = document.getElementById('leaderboard-msg');
-        let nick = input.value.trim();
+
+        let rawNick = nickInput.value.trim();
+        let nick = sanitizujTekst(rawNick);
+        let pin = pinInput.value.trim();
+        let ans = parseInt(captchaInput.value);
 
         if (!nick) {
             msg.style.color = '#ffeb3b';
@@ -1491,27 +1518,53 @@
             return;
         }
 
+        if (!pin) {
+            msg.style.color = '#ffeb3b';
+            msg.innerText = '⚠️ Podaj PIN, aby chronić konto przed podmianą!';
+            return;
+        }
+
+        // Sprawdzanie Captcha (Ochrona przed botami)
+        if (isNaN(ans) || ans !== (captchaA + captchaB)) {
+            msg.style.color = '#ff4d4d';
+            msg.innerText = '❌ Błędny wynik działania (Captcha)! Wynik zmieniony.';
+            generujCaptcha();
+            return;
+        }
+
         let topka = pobierzTopke();
         let idx = topka.findIndex(item => item.nick.toLowerCase() === nick.toLowerCase());
 
         if (idx !== -1) {
+            // Nick już istnieje — weryfikacja PIN-u!
+            if (topka[idx].pin && topka[idx].pin !== pin) {
+                msg.style.color = '#ff4d4d';
+                msg.innerText = '❌ Ten nick należy do kogoś innego lub zły PIN!';
+                generujCaptcha();
+                return;
+            }
+
             if (punkty > topka[idx].score) {
                 topka[idx].score = Math.floor(punkty);
+                topka[idx].pin = pin; // Zapis lub aktualizacja PINu
                 msg.style.color = '#00e676';
-                msg.innerText = '🎉 Zaktualizowano Twój najlepszy wynik!';
+                msg.innerText = '🎉 Zaktualizowano Twój wynik w topce!';
             } else {
                 msg.style.color = '#ffeb3b';
                 msg.innerText = 'ℹ️ Masz już lepszy lub taki sam wynik w topce!';
+                generujCaptcha();
                 return;
             }
         } else {
-            topka.push({ nick: nick, score: Math.floor(punkty) });
+            // Nowy nick w topce
+            topka.push({ nick: nick, score: Math.floor(punkty), pin: pin });
             msg.style.color = '#00e676';
-            msg.innerText = '🎉 Dodano Cię do globalnej topki!';
+            msg.innerText = '🎉 Zostałeś pomyślnie dodany do rankingów!';
         }
 
         localStorage.setItem('miloszka_leaderboard', JSON.stringify(topka));
         renderujTopke();
+        generujCaptcha();
         zagrajdzwiek(1100, 'triangle', 0.2);
     }
 
@@ -2006,7 +2059,6 @@
             return;
         }
 
-        // Zabieramy stawkę
         punkty -= stawka;
 
         let czyWygrana = Math.random() < 0.5;
@@ -2526,11 +2578,9 @@
         document.getElementById('cost-crit').innerText = `Koszt: ${kosztCrit.toLocaleString()} pkt`;
         document.getElementById('cost-time').innerText = `Koszt: ${kosztPetli.toLocaleString()} pkt`;
 
-        // Ograniczenie hazardu podczas szału
         const gambleBtn = document.getElementById('gamble-btn');
         if (gambleBtn) gambleBtn.disabled = isFrenzyActive;
 
-        // ODŚWIEŻENIE PANELU STATYSTYK W USTAWIENIACH
         document.getElementById('stat-total-clicks').innerText = statTotalClicks.toLocaleString();
         document.getElementById('stat-total-earned').innerText = Math.floor(statTotalEarned).toLocaleString();
         document.getElementById('stat-physics-earned').innerText = Math.floor(zarobioneZFizyki).toLocaleString();
