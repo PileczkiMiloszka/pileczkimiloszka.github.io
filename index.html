@@ -1989,7 +1989,10 @@
         return 1 + (prestizLvl * 0.5);
     }
 
-    // --- NAPRAWIONA LOGIKA KOŁA FORTUNY ---
+    // --- KOŁO FORTUNY ---
+    const wCanvas = document.getElementById('wheel-canvas');
+    const wCtx = wCanvas.getContext('2d');
+    
     const nagrodyObj = [
         { label: '500 Pkt', type: 'pts', val: 500 },
         { label: '1000 Pkt', type: 'pts', val: 1000 },
@@ -2045,11 +2048,9 @@
         let selectedIndex = Math.floor(Math.random() * nagrodyObj.length);
         let segmentAngle = 360 / nagrodyObj.length;
         
-        // Obliczamy kąt tak, aby wylosowany indeks znalazł się na górze (wskaźnik na 12 godzinie, czyli 270 stopni w układzie współrzędnych obrotu)
         let targetSegmentCenter = selectedIndex * segmentAngle + (segmentAngle / 2);
         let extraSpins = (5 + Math.floor(Math.random() * 3)) * 360;
         
-        // Nowy całkowity kąt obrotu bazujący na aktualnym, aby koło kręciło się płynnie dalej w tę samą stronę
         let targetAngle = aktualnyKatKola + extraSpins + (270 - targetSegmentCenter - (aktualnyKatKola % 360));
         aktualnyKatKola = targetAngle;
 
@@ -2595,7 +2596,6 @@
         }
     }
 
-    // Automatyczne wyczyszczenie zapisu topki w localStorage przy pierwszym uruchomieniu tej wersji, jeśli zawierała stare dane
     if (!localStorage.getItem('miloszka_leaderboard_reset_done')) {
         localStorage.removeItem('miloszka_leaderboard');
         localStorage.setItem('miloszka_leaderboard_reset_done', 'true');
