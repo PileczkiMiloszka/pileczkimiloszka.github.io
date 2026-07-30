@@ -90,7 +90,7 @@
             transform: scale(1.1);
         }
 
-        /* --- PRZYCISK I PANEL USTAWIEŃ --- */
+        /* --- PRZYCISK I PANEL USTAWIEŃ & MODALE --- */
         .settings-icon-btn {
             position: fixed;
             top: 15px;
@@ -147,7 +147,7 @@
             border-radius: 24px;
             padding: 25px 30px;
             width: 90%;
-            max-width: 440px;
+            max-width: 460px;
             max-height: 85vh;
             overflow-y: auto;
             box-shadow: 0 15px 40px rgba(0,0,0,0.6), inset 0 0 15px rgba(255,215,0,0.1);
@@ -188,6 +188,43 @@
 
         .close-settings-btn:hover {
             color: #ff4d4d;
+        }
+
+        /* --- STYL DLA RANKINGU (TOPKI) --- */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item.top-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
+            border-color: gold;
+            color: gold;
+        }
+
+        .leaderboard-item.top-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
+            border-color: #c0c0c0;
+            color: #e0e0e0;
+        }
+
+        .leaderboard-item.top-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
+            border-color: #cd7f32;
+            color: #ffaa66;
         }
 
         .setting-option {
@@ -313,7 +350,6 @@
             font-size: 0.9em;
             font-weight: bold;
             outline: none;
-            text-transform: uppercase;
             transition: border-color 0.2s;
         }
 
@@ -362,6 +398,7 @@
             background: radial-gradient(circle at top, #ffffff, #ff69b4);
             border-radius: 50%;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             font-weight: bold;
@@ -375,6 +412,12 @@
 
         .ball:hover {
             transform: scale(1.1) rotate(5deg);
+        }
+
+        .ball.ball-topka {
+            background: radial-gradient(circle at top, #ffe066, #ff8c00);
+            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.4);
+            border: 2px solid gold;
         }
 
         .game-zone {
@@ -1155,6 +1198,31 @@
     </div>
 </div>
 
+<!-- MODAL RANKINGU (TOPKI) -->
+<div class="settings-modal-overlay" id="leaderboard-overlay" onclick="zamknijTopkeTlo(event)">
+    <div class="settings-modal">
+        <div class="settings-header">
+            <h2>🏆 Globalna Topka Graczy</h2>
+            <button class="close-settings-btn" onclick="zamknijTopke()">&times;</button>
+        </div>
+
+        <div class="leaderboard-list" id="leaderboard-list">
+            <!-- Lista zapisanych graczy -->
+        </div>
+
+        <div class="setting-option">
+            <div class="setting-label-row">
+                <span>✍️ Wpisz się do Topki:</span>
+            </div>
+            <div class="code-input-container">
+                <input type="text" id="player-nickname" class="code-input" placeholder="Twój Nick..." maxlength="15">
+                <button class="code-btn" onclick="zapiszDoTopki()">Zapisz</button>
+            </div>
+            <div id="leaderboard-msg" style="font-size: 0.82em; min-height: 18px; margin-top: 4px; font-weight: bold;"></div>
+        </div>
+    </div>
+</div>
+
 <header>
     <h1>⚽ pilkimiloszka ⚽</h1>
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
@@ -1162,7 +1230,7 @@
 
 <section class="balls" id="pilki">
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍓</div>
-    <div class="ball" onclick="zmienKolor(this)">Słodkie Piłeczki Miłoszka ⚽</div>
+    <div class="ball ball-topka" onclick="otworzTopke()">🏆 Topka 🏆<br><span style="font-size:0.75em; opacity:0.9; margin-top:3px;">Global Ranking</span></div>
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
 </section>
 
@@ -1359,6 +1427,94 @@
         if (event.target.id === 'settings-overlay') {
             zamknijUstawienia();
         }
+    }
+
+    /* --- OBSŁUGA RANKINGU (TOPKA) --- */
+    let domyslnaTopka = [
+        { nick: 'Miłosz', score: 1000000000 },
+        { nick: 'PiłeczkaPRO', score: 50000000 },
+        { nick: 'Klikacz2026', score: 10000000 }
+    ];
+
+    function pobierzTopke() {
+        let saved = localStorage.getItem('miloszka_leaderboard');
+        return saved ? JSON.parse(saved) : domyslnaTopka;
+    }
+
+    function otworzTopke() {
+        renderujTopke();
+        document.getElementById('leaderboard-overlay').classList.add('active');
+        zagrajdzwiek(700, 'sine', 0.05);
+    }
+
+    function zamknijTopke() {
+        document.getElementById('leaderboard-overlay').classList.remove('active');
+        document.getElementById('leaderboard-msg').innerText = '';
+        zagrajdzwiek(450, 'sine', 0.05);
+    }
+
+    function zamknijTopkeTlo(event) {
+        if (event.target.id === 'leaderboard-overlay') {
+            zamknijTopke();
+        }
+    }
+
+    function renderujTopke() {
+        let topka = pobierzTopke();
+        topka.sort((a, b) => b.score - a.score);
+        let listContainer = document.getElementById('leaderboard-list');
+        listContainer.innerHTML = '';
+
+        topka.slice(0, 10).forEach((gracz, idx) => {
+            let classRank = '';
+            if (idx === 0) classRank = 'top-1';
+            else if (idx === 1) classRank = 'top-2';
+            else if (idx === 2) classRank = 'top-3';
+
+            let medal = idx === 0 ? '🥇 ' : (idx === 1 ? '🥈 ' : (idx === 2 ? '🥉 ' : `${idx + 1}. `));
+
+            listContainer.innerHTML += `
+                <div class="leaderboard-item ${classRank}">
+                    <span>${medal}${gracz.nick}</span>
+                    <span>${Math.floor(gracz.score).toLocaleString()} pkt</span>
+                </div>
+            `;
+        });
+    }
+
+    function zapiszDoTopki() {
+        let input = document.getElementById('player-nickname');
+        let msg = document.getElementById('leaderboard-msg');
+        let nick = input.value.trim();
+
+        if (!nick) {
+            msg.style.color = '#ffeb3b';
+            msg.innerText = '⚠️ Wpisz swój nick!';
+            return;
+        }
+
+        let topka = pobierzTopke();
+        let idx = topka.findIndex(item => item.nick.toLowerCase() === nick.toLowerCase());
+
+        if (idx !== -1) {
+            if (punkty > topka[idx].score) {
+                topka[idx].score = Math.floor(punkty);
+                msg.style.color = '#00e676';
+                msg.innerText = '🎉 Zaktualizowano Twój najlepszy wynik!';
+            } else {
+                msg.style.color = '#ffeb3b';
+                msg.innerText = 'ℹ️ Masz już lepszy lub taki sam wynik w topce!';
+                return;
+            }
+        } else {
+            topka.push({ nick: nick, score: Math.floor(punkty) });
+            msg.style.color = '#00e676';
+            msg.innerText = '🎉 Dodano Cię do globalnej topki!';
+        }
+
+        localStorage.setItem('miloszka_leaderboard', JSON.stringify(topka));
+        renderujTopke();
+        zagrajdzwiek(1100, 'triangle', 0.2);
     }
 
     function toggleStats() {
