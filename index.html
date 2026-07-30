@@ -1432,7 +1432,7 @@
     }
 
     /* --- OBSŁUGA RANKINGU (TOPKA) & SECURITY PIN --- */
-    let domyslnaTopka = [];
+    let domyslnaTopka = []; // Pusta topka - brak graczy na starcie
 
     function pobierzTopke() {
         let saved = localStorage.getItem('miloszka_leaderboard');
@@ -1466,6 +1466,11 @@
         topka.sort((a, b) => b.score - a.score);
         let listContainer = document.getElementById('leaderboard-list');
         listContainer.innerHTML = '';
+
+        if (topka.length === 0) {
+            listContainer.innerHTML = '<div style="text-align: center; color: #aaa; padding: 10px; font-size: 0.9em;">Brak wyników w topce. Bądź pierwszy!</div>';
+            return;
+        }
 
         topka.slice(0, 10).forEach((gracz, idx) => {
             let classRank = '';
@@ -1509,7 +1514,6 @@
         let idx = topka.findIndex(item => item.nick.toLowerCase() === nick.toLowerCase());
 
         if (idx !== -1) {
-            // Nick już istnieje — weryfikacja PIN-u!
             if (topka[idx].pin && topka[idx].pin !== pin) {
                 msg.style.color = '#ff4d4d';
                 msg.innerText = '❌ Ten nick należy do kogoś innego lub zły PIN!';
@@ -1518,7 +1522,7 @@
 
             if (punkty > topka[idx].score) {
                 topka[idx].score = Math.floor(punkty);
-                topka[idx].pin = pin; // Zapis lub aktualizacja PINu
+                topka[idx].pin = pin;
                 msg.style.color = '#00e676';
                 msg.innerText = '🎉 Zaktualizowano Twój wynik w topce!';
             } else {
@@ -1527,7 +1531,6 @@
                 return;
             }
         } else {
-            // Nowy nick w topce
             topka.push({ nick: nick, score: Math.floor(punkty), pin: pin });
             msg.style.color = '#00e676';
             msg.innerText = '🎉 Zostałeś pomyślnie dodany do rankingów!';
@@ -1573,7 +1576,6 @@
 
     // --- LOGIKA KODÓW PROMOCYJNYCH ---
     let uzyteKody = [];
-    localStorage.removeItem('miloszka_used_codes');
 
     function realizujKod() {
         const input = document.getElementById('promo-code-input');
@@ -1598,8 +1600,6 @@
             let nagroda = 100000;
             dodajDoWszystkichPunkty(nagroda);
             uzyteKody.push(kod);
-            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
-            
             msg.style.color = '#00e676';
             msg.innerText = `🎉 Aktywowano kod! +${nagroda.toLocaleString()} Pkt!`;
             input.value = '';
@@ -1610,8 +1610,6 @@
             let nagroda = 100000000;
             dodajDoWszystkichPunkty(nagroda);
             uzyteKody.push(kod);
-            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
-            
             msg.style.color = '#00e676';
             msg.innerText = `🔥 KOD LEGENDA! +${nagroda.toLocaleString()} Pkt!`;
             input.value = '';
@@ -1622,8 +1620,6 @@
             let nagroda = 500000000;
             dodajDoWszystkichPunkty(nagroda);
             uzyteKody.push(kod);
-            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
-            
             msg.style.color = '#00e676';
             msg.innerText = `💥 SUPER KOD CODMB! +500M Pkt!`;
             input.value = '';
@@ -1634,8 +1630,6 @@
             let nagroda = 1000000000;
             dodajDoWszystkichPunkty(nagroda);
             uzyteKody.push(kod);
-            localStorage.setItem('miloszka_used_codes', JSON.stringify(uzyteKody));
-            
             msg.style.color = '#00e676';
             msg.innerText = `👑 SEKRETNY KOD MIŁOSZA! +1,000,000,000 Pkt (1B)!`;
             input.value = '';
@@ -2599,10 +2593,16 @@
     }
 
     function resetujGre() {
-        if (confirm("Czy na pewno chcesz zresetować cały swój postęp?")) {
+        if (confirm("Czy na pewno chcesz zresetować cały swój postęp oraz wyczyścić tabelę wyników (topkę)?")) {
             localStorage.clear();
             location.reload();
         }
+    }
+
+    // Automatyczne wyczyszczenie zapisu topki w localStorage przy pierwszym uruchomieniu tej wersji, jeśli zawierała stare dane
+    if (!localStorage.getItem('miloszka_leaderboard_reset_done')) {
+        localStorage.removeItem('miloszka_leaderboard');
+        localStorage.setItem('miloszka_leaderboard_reset_done', 'true');
     }
 
     aktualizujSkorkeGlownejKuli();
