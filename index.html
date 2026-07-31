@@ -190,43 +190,6 @@
             color: #ff4d4d;
         }
 
-        /* --- STYL DLA RANKINGU (TOPKI) --- */
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-weight: bold;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .leaderboard-item.top-1 {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.3), rgba(255, 215, 0, 0.1));
-            border-color: gold;
-            color: gold;
-        }
-
-        .leaderboard-item.top-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.3), rgba(192, 192, 192, 0.1));
-            border-color: #c0c0c0;
-            color: #e0e0e0;
-        }
-
-        .leaderboard-item.top-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.3), rgba(205, 127, 50, 0.1));
-            border-color: #cd7f32;
-            color: #ffaa66;
-        }
-
         .setting-option {
             display: flex;
             flex-direction: column;
@@ -413,12 +376,6 @@
 
         .ball:hover {
             transform: scale(1.1) rotate(5deg);
-        }
-
-        .ball.ball-topka {
-            background: radial-gradient(circle at top, #ffe066, #ff8c00);
-            box-shadow: 0 8px 20px rgba(255, 140, 0, 0.4);
-            border: 2px solid gold;
         }
 
         .game-zone {
@@ -1198,32 +1155,6 @@
     </div>
 </div>
 
-<!-- MODAL RANKINGU (TOPKI) -->
-<div class="settings-modal-overlay" id="leaderboard-overlay" onclick="zamknijTopkeTlo(event)">
-    <div class="settings-modal">
-        <div class="settings-header">
-            <h2>🏆 Globalna Topka Graczy</h2>
-            <button class="close-settings-btn" onclick="zamknijTopke()">&times;</button>
-        </div>
-
-        <div class="leaderboard-list" id="leaderboard-list">
-            <!-- Lista zapisanych graczy -->
-        </div>
-
-        <div class="setting-option">
-            <div class="setting-label-row">
-                <span>✍️ Wpisz się do Topki:</span>
-            </div>
-            <div class="code-input-container">
-                <input type="text" id="player-nickname" class="code-input" placeholder="Twój Nick..." maxlength="15">
-                <input type="text" id="player-pin" class="code-input" placeholder="Twój PIN (do ochrony nicku)..." maxlength="10">
-                <button class="code-btn" onclick="zapiszDoTopki()">Zapisz Wynik</button>
-            </div>
-            <div id="leaderboard-msg" style="font-size: 0.82em; min-height: 18px; margin-top: 4px; font-weight: bold;"></div>
-        </div>
-    </div>
-</div>
-
 <header>
     <h1>⚽ pilkimiloszka ⚽</h1>
     <p>Witamy na stronie "Słodkie Piłeczki Miłoszka"!</p>
@@ -1231,7 +1162,6 @@
 
 <section class="balls" id="pilki">
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍓</div>
-    <div class="ball ball-topka" onclick="otworzTopke()">🏆 Topka 🏆<br><span style="font-size:0.75em; opacity:0.9; margin-top:3px;">Global Ranking</span></div>
     <div class="ball" onclick="zmienKolor(this)">Kliknij mnie! 🍬</div>
 </section>
 
@@ -1428,116 +1358,6 @@
         if (event.target.id === 'settings-overlay') {
             zamknijUstawienia();
         }
-    }
-
-    /* --- OBSŁUGA RANKINGU (TOPKA) & SECURITY PIN --- */
-    let domyslnaTopka = []; // Pusta topka - brak graczy na starcie
-
-    function pobierzTopke() {
-        let saved = localStorage.getItem('miloszka_leaderboard');
-        return saved ? JSON.parse(saved) : domyslnaTopka;
-    }
-
-    function otworzTopke() {
-        renderujTopke();
-        document.getElementById('leaderboard-overlay').classList.add('active');
-        zagrajdzwiek(700, 'sine', 0.05);
-    }
-
-    function zamknijTopke() {
-        document.getElementById('leaderboard-overlay').classList.remove('active');
-        document.getElementById('leaderboard-msg').innerText = '';
-        zagrajdzwiek(450, 'sine', 0.05);
-    }
-
-    function zamknijTopkeTlo(event) {
-        if (event.target.id === 'leaderboard-overlay') {
-            zamknijTopke();
-        }
-    }
-
-    function sanitizujTekst(str) {
-        return str.replace(/[&<>"']/g, "");
-    }
-
-    function renderujTopke() {
-        let topka = pobierzTopke();
-        topka.sort((a, b) => b.score - a.score);
-        let listContainer = document.getElementById('leaderboard-list');
-        listContainer.innerHTML = '';
-
-        if (topka.length === 0) {
-            listContainer.innerHTML = '<div style="text-align: center; color: #aaa; padding: 10px; font-size: 0.9em;">Brak wyników w topce. Bądź pierwszy!</div>';
-            return;
-        }
-
-        topka.slice(0, 10).forEach((gracz, idx) => {
-            let classRank = '';
-            if (idx === 0) classRank = 'top-1';
-            else if (idx === 1) classRank = 'top-2';
-            else if (idx === 2) classRank = 'top-3';
-
-            let medal = idx === 0 ? '🥇 ' : (idx === 1 ? '🥈 ' : (idx === 2 ? '🥉 ' : `${idx + 1}. `));
-
-            listContainer.innerHTML += `
-                <div class="leaderboard-item ${classRank}">
-                    <span>${medal}${sanitizujTekst(gracz.nick)}</span>
-                    <span>${Math.floor(gracz.score).toLocaleString()} pkt</span>
-                </div>
-            `;
-        });
-    }
-
-    function zapiszDoTopki() {
-        let nickInput = document.getElementById('player-nickname');
-        let pinInput = document.getElementById('player-pin');
-        let msg = document.getElementById('leaderboard-msg');
-
-        let rawNick = nickInput.value.trim();
-        let nick = sanitizujTekst(rawNick);
-        let pin = pinInput.value.trim();
-
-        if (!nick) {
-            msg.style.color = '#ffeb3b';
-            msg.innerText = '⚠️ Wpisz swój nick!';
-            return;
-        }
-
-        if (!pin) {
-            msg.style.color = '#ffeb3b';
-            msg.innerText = '⚠️ Podaj PIN, aby chronić konto przed podmianą!';
-            return;
-        }
-
-        let topka = pobierzTopke();
-        let idx = topka.findIndex(item => item.nick.toLowerCase() === nick.toLowerCase());
-
-        if (idx !== -1) {
-            if (topka[idx].pin && topka[idx].pin !== pin) {
-                msg.style.color = '#ff4d4d';
-                msg.innerText = '❌ Ten nick należy do kogoś innego lub zły PIN!';
-                return;
-            }
-
-            if (punkty > topka[idx].score) {
-                topka[idx].score = Math.floor(punkty);
-                topka[idx].pin = pin;
-                msg.style.color = '#00e676';
-                msg.innerText = '🎉 Zaktualizowano Twój wynik w topce!';
-            } else {
-                msg.style.color = '#ffeb3b';
-                msg.innerText = 'ℹ️ Masz już lepszy lub taki sam wynik w topce!';
-                return;
-            }
-        } else {
-            topka.push({ nick: nick, score: Math.floor(punkty), pin: pin });
-            msg.style.color = '#00e676';
-            msg.innerText = '🎉 Zostałeś pomyślnie dodany do rankingów!';
-        }
-
-        localStorage.setItem('miloszka_leaderboard', JSON.stringify(topka));
-        renderujTopke();
-        zagrajdzwiek(1100, 'triangle', 0.2);
     }
 
     function toggleStats() {
@@ -2590,15 +2410,10 @@
     }
 
     function resetujGre() {
-        if (confirm("Czy na pewno chcesz zresetować cały swój postęp oraz wyczyścić tabelę wyników (topkę)?")) {
+        if (confirm("Czy na pewno chcesz zresetować cały swój postęp?")) {
             localStorage.clear();
             location.reload();
         }
-    }
-
-    if (!localStorage.getItem('miloszka_leaderboard_reset_done')) {
-        localStorage.removeItem('miloszka_leaderboard');
-        localStorage.setItem('miloszka_leaderboard_reset_done', 'true');
     }
 
     aktualizujSkorkeGlownejKuli();
